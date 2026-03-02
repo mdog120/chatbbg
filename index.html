@@ -1,18 +1,470 @@
-<div class="app-wrapper">
-    <header>
-        <div class="status-dot"></div>
-        <h1>ChatBBG ✨</h1>
-    </header>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatBBG 💗</title>
+  <style>
+    :root{
+      --bg1:#fff1f7;
+      --bg2:#ffe4f0;
+      --panel:#ffffffcc;
+      --pink:#ff4fa3;
+      --pink2:#ff7bc0;
+      --text:#2b2b2b;
+      --muted:#6b6b6b;
+      --border:#ffd1e6;
+      --shadow: 0 12px 30px rgba(255, 79, 163, 0.18);
+      --shadow2: 0 10px 22px rgba(0,0,0,0.08);
+      --radius:18px;
+      --radius2:24px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
 
-    <main id="chat-display">
-        <div class="bubble bbg">Hey bestie! Ready to glow up today? 🎀</div>
-        <div class="bubble user">I need a quick affirmation!</div>
-        <div class="bubble bbg">You are the main character and your energy is literally magnetic. Period. 💅</div>
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      color:var(--text);
+      background: radial-gradient(1000px 700px at 20% 10%, #ffffff 0%, transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, #ffffff 0%, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      height:100vh;
+      overflow:hidden;
+    }
+
+    .app{
+      height:100vh;
+      display:flex;
+      gap:14px;
+      padding:14px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      width: 290px;
+      min-width: 260px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .side-top{
+      padding:14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      border-bottom:1px solid var(--border);
+    }
+
+    .logo{
+      width:40px;height:40px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      box-shadow: var(--shadow);
+      display:grid;
+      place-items:center;
+      color:white;
+      font-weight:800;
+      letter-spacing:0.5px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .brand .name{ font-weight:800; }
+    .brand .tag{ font-size:12px; color:var(--muted); }
+
+    .new-chat{
+      margin-left:auto;
+      border:none;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      color:white;
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      transition: transform .08s ease;
+    }
+    .new-chat:active{ transform: translateY(1px); }
+
+    .side-list{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:auto;
+    }
+
+    .side-item{
+      padding:12px;
+      border-radius: 16px;
+      border:1px solid transparent;
+      background: #fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .side-item.active{
+      border-color: var(--border);
+      background: linear-gradient(180deg, #fff, #fff3fa);
+    }
+    .side-item .title{
+      font-weight:700;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .side-item .time{
+      font-size:12px;
+      color:var(--muted);
+      flex-shrink:0;
+    }
+
+    .side-bottom{
+      margin-top:auto;
+      padding:12px;
+      border-top:1px solid var(--border);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      background: linear-gradient(180deg, transparent, #fff6fb);
+    }
+
+    .avatar{
+      width:38px;height:38px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ffd1e6, #ffffff);
+      border: 1px solid var(--border);
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color: var(--pink);
+    }
+
+    .me{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .me .who{ font-weight:800; font-size:14px;}
+    .me .status{ font-size:12px; color:var(--muted); }
+
+    /* Main */
+    .main{
+      flex:1;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow2);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      min-width: 0;
+    }
+
+    .topbar{
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(90deg, #fff, #fff4fa);
+    }
+    .topbar .title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background:#fff;
+      color: var(--pink);
+      font-weight:800;
+    }
+
+    .chat{
+      flex:1;
+      padding:18px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      scroll-behavior:smooth;
+    }
+
+    .msg-row{
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+    }
+    .msg-row.you{ justify-content:flex-end; }
+    .bubble{
+      max-width: min(720px, 85%);
+      padding:12px 14px;
+      border-radius: 18px;
+      border:1px solid var(--border);
+      background:#fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+      font-size:15px;
+      line-height:1.35;
+      position:relative;
+    }
+    .bubble.bbg{
+      background: linear-gradient(180deg, #fff, #fff1f8);
+      border-color: #ffd1e6;
+    }
+    .bubble.you{
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      border:none;
+      color:white;
+      box-shadow: var(--shadow);
+    }
+
+    .meta{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+    }
+    .meta.right{ text-align:right; }
+
+    /* Input */
+    .composer-wrap{
+      border-top:1px solid var(--border);
+      padding:14px;
+      background: linear-gradient(180deg, #fff, #fff1f8);
+    }
+    .composer{
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 20px;
+      padding:10px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+    }
+    textarea{
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      font-family: var(--font);
+      font-size:15px;
+      line-height:1.35;
+      padding:8px;
+      max-height:140px;
+    }
+
+    .send{
+      border:none;
+      cursor:pointer;
+      flex-shrink:0;
+      width:44px;
+      height:44px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      color:white;
+      font-weight:900;
+      box-shadow: var(--shadow);
+      display:grid;
+      place-items:center;
+      transition: transform .08s ease;
+    }
+    .send:active{ transform: translateY(1px); }
+
+    /* Typing dots */
+    .typing{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+    }
+    .dot{
+      width:7px;height:7px;
+      border-radius: 999px;
+      background: var(--pink);
+      opacity:.6;
+      animation: bounce 1s infinite ease-in-out;
+    }
+    .dot:nth-child(2){ animation-delay:.15s; }
+    .dot:nth-child(3){ animation-delay:.3s; }
+
+    @keyframes bounce{
+      0%, 100%{ transform: translateY(0); opacity:.5; }
+      50%{ transform: translateY(-4px); opacity:1; }
+    }
+
+    /* Mobile */
+    @media (max-width: 900px){
+      .sidebar{ display:none; }
+      .app{ padding:10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="side-top">
+        <div class="logo">BBG</div>
+        <div class="brand">
+          <div class="name">ChatBBG</div>
+          <div class="tag">pink • cutesy • comfy</div>
+        </div>
+        <button class="new-chat" id="newChatBtn">+ New</button>
+      </div>
+
+      <div class="side-list" id="chatList">
+        <div class="side-item active">
+          <div class="title">💗 Welcome chat</div>
+          <div class="time">now</div>
+        </div>
+        <div class="side-item">
+          <div class="title">🎀 Homework helper</div>
+          <div class="time">yday</div>
+        </div>
+        <div class="side-item">
+          <div class="title">✨ Outfit ideas</div>
+          <div class="time">2d</div>
+        </div>
+      </div>
+
+      <div class="side-bottom">
+        <div class="avatar">M</div>
+        <div class="me">
+          <div class="who">Morola</div>
+          <div class="status">online ✿</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title">
+          <span>ChatBBG 💗</span>
+          <span class="pill">UI mode</span>
+        </div>
+        <span class="pill">♡ pastel vibes</span>
+      </div>
+
+      <section class="chat" id="chat">
+        <div class="msg-row bbg">
+          <div class="bubble bbg">
+            hiii bestie 💕 i’m ChatBBG! tell me what you wanna build and i’ll make it cute ✨
+            <div class="meta">ChatBBG • just now</div>
+          </div>
+        </div>
+
+        <div class="msg-row you">
+          <div class="bubble you">
+            can we make a chatgpt-looking ui but pink?
+            <div class="meta right">You • just now</div>
+          </div>
+        </div>
+
+        <div class="msg-row bbg" id="typingRow" style="display:none;">
+          <div class="bubble bbg">
+            <span class="typing" aria-label="ChatBBG is typing">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+            <div class="meta">ChatBBG • typing…</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="composer-wrap">
+        <div class="composer">
+          <textarea id="input" rows="1" placeholder="message ChatBBG… ✿"></textarea>
+          <button class="send" id="sendBtn" title="Send">➤</button>
+        </div>
+        <div class="meta" style="padding:8px 6px 0;">
+          tip: press <b>Enter</b> to send • <b>Shift+Enter</b> for a new line
+        </div>
+      </div>
     </main>
+  </div>
 
-    <div class="input-container">
-        <input type="text" placeholder="Spill the tea..." id="user-input">
-        <button id="send-btn">💖</button>
-    </div>
-</div>
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const typingRow = document.getElementById("typingRow");
+    const newChatBtn = document.getElementById("newChatBtn");
 
+    function autoGrow(el){
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 140) + "px";
+    }
+
+    input.addEventListener("input", () => autoGrow(input));
+
+    function addMsg(text, who="you"){
+      const row = document.createElement("div");
+      row.className = "msg-row " + (who === "you" ? "you" : "bbg");
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (who === "you" ? "you" : "bbg");
+      bubble.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "meta" + (who === "you" ? " right" : "");
+      meta.textContent = (who === "you" ? "You" : "ChatBBG") + " • just now";
+      bubble.appendChild(meta);
+
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function fakeReply(userText){
+      typingRow.style.display = "";
+      chat.scrollTop = chat.scrollHeight;
+
+      setTimeout(() => {
+        typingRow.style.display = "none";
+        // super simple demo reply:
+        addMsg("okiee 💗 i heard: “" + userText + "” — wanna add themes, emoji reactions, or a cute login screen next? ✨", "bbg");
+      }, 650);
+    }
+
+    function send(){
+      const text = input.value.trim();
+      if(!text) return;
+      addMsg(text, "you");
+      input.value = "";
+      autoGrow(input);
+      fakeReply(text);
+    }
+
+    sendBtn.addEventListener("click", send);
+
+    input.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        send();
+      }
+    });
+
+    newChatBtn.addEventListener("click", () => {
+      chat.innerHTML = "";
+      addMsg("hiii bestie 💕 new chat unlocked ✨ what are we building today?", "bbg");
+    });
+  </script>
+</body>
+</html>
