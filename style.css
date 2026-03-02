@@ -70,3 +70,54 @@ input[type="text"]:focus {
     transform: scale(1.1);
     background: var(--accent-pink);
 }
+
+/* Add this to your existing CSS */
+
+@keyframes pulse {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 182, 193, 0.4); /* Soft pink glow */
+    }
+    50% {
+        text-shadow: 0 0 15px rgba(255, 105, 180, 0.7); /* Brighter hot pink glow */
+    }
+    100% {
+        text-shadow: 0 0 5px rgba(255, 182, 193, 0.4);
+    }
+}
+
+header h1 {
+    font-size: 1.8em;
+    color: var(--accent-pink); /* Hot Pink for the name */
+    margin: 0;
+    animation: pulse 2s infinite alternate; /* Apply the animation */
+}
+
+/* You'll also need to define the header itself if not already done in the previous code */
+header {
+    background: var(--soft-white);
+    padding: 15px 20px;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(255, 182, 193, 0.1);
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #6ee64f; /* Green online dot */
+    border-radius: 50%;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    animation: fadeInOut 1.5s infinite alternate; /* Optional: a slight fade for the dot too */
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
