@@ -3,197 +3,333 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatBBG 💗</title>
+  <title>ChatBBG</title>
+
+  <!-- soft, editorial-ish fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg1:#fff1f7; --bg2:#ffe4f0; --panel:#ffffffcc;
-      --pink:#ff4fa3; --pink2:#ff7bc0; --text:#2b2b2b;
-      --muted:#6b6b6b; --border:#ffd1e6;
-      --shadow: 0 12px 30px rgba(255, 79, 163, 0.18);
-      --shadow2: 0 10px 22px rgba(0,0,0,0.08);
-      --radius2:24px; --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      --bg: #ffffff;
+      --ink: #1f1a22;
+      --muted: #6f6470;
+      --line: rgba(31, 26, 34, .12);
+
+      --pink: #ff5fb6;
+      --pink2:#ff8ad0;
+      --pinkWash: rgba(255, 95, 182, .10);
+
+      --shadow: 0 18px 40px rgba(31, 26, 34, .10);
+      --radius: 18px;
+      --radius2: 28px;
+
+      --serif: "Fraunces", ui-serif, Georgia, serif;
+      --sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
+
     *{ box-sizing:border-box; }
+    html, body{ height:100%; }
     body{
-      margin:0; font-family:var(--font); color:var(--text);
-      background: radial-gradient(1000px 700px at 20% 10%, #ffffff 0%, transparent 55%),
-                  radial-gradient(900px 600px at 90% 20%, #ffffff 0%, transparent 55%),
-                  linear-gradient(135deg, var(--bg1), var(--bg2));
-      height:100vh; overflow:hidden;
+      margin:0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      overflow:hidden;
     }
-    .app{ height:100vh; display:flex; gap:14px; padding:14px; }
-    .sidebar{
-      width:290px; background:var(--panel); backdrop-filter:blur(14px);
-      border:1px solid var(--border); border-radius:var(--radius2);
-      box-shadow:var(--shadow2); display:flex; flex-direction:column; overflow:hidden;
-    }
-    .side-top{ padding:14px; display:flex; gap:10px; align-items:center; border-bottom:1px solid var(--border); }
-    .logo{
-      width:40px;height:40px;border-radius:14px;
-      background:linear-gradient(135deg,var(--pink),var(--pink2));
-      box-shadow:var(--shadow); display:grid; place-items:center; color:#fff; font-weight:800;
-    }
-    .brand{ display:flex; flex-direction:column; line-height:1.1; }
-    .brand .name{ font-weight:800; } .brand .tag{ font-size:12px; color:var(--muted); }
-    .new-chat{
-      margin-left:auto; border:none; background:linear-gradient(135deg,var(--pink),var(--pink2));
-      color:#fff; padding:10px 12px; border-radius:14px; font-weight:700; cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-    .side-list{ padding:12px; display:flex; flex-direction:column; gap:10px; overflow:auto; }
-    .side-item{
-      padding:12px; border-radius:16px; background:#fff; cursor:pointer;
-      display:flex; justify-content:space-between; gap:10px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.06); border:1px solid transparent;
-    }
-    .side-item.active{ border-color:var(--border); background:linear-gradient(180deg,#fff,#fff3fa); }
-    .side-item .title{ font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .side-item .time{ font-size:12px; color:var(--muted); flex-shrink:0; }
-    .side-bottom{
-      margin-top:auto; padding:12px; border-top:1px solid var(--border);
-      display:flex; gap:10px; align-items:center; background:linear-gradient(180deg,transparent,#fff6fb);
-    }
-    .avatar{
-      width:38px;height:38px;border-radius:16px;
-      background:linear-gradient(135deg,#ffd1e6,#ffffff);
-      border:1px solid var(--border);
-      display:grid; place-items:center; font-weight:800; color:var(--pink);
-    }
-    .me{ display:flex; flex-direction:column; line-height:1.1; }
-    .me .who{ font-weight:800; font-size:14px; } .me .status{ font-size:12px; color:var(--muted); }
 
-    .main{
-      flex:1; background:var(--panel); backdrop-filter:blur(14px);
-      border:1px solid var(--border); border-radius:var(--radius2);
-      box-shadow:var(--shadow2); display:flex; flex-direction:column; overflow:hidden; min-width:0;
+    /* subtle page texture */
+    .page{
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      background:
+        radial-gradient(900px 500px at 15% 15%, rgba(255, 95, 182, .06), transparent 60%),
+        radial-gradient(900px 500px at 85% 25%, rgba(255, 138, 208, .06), transparent 60%),
+        radial-gradient(800px 450px at 55% 95%, rgba(255, 95, 182, .04), transparent 55%),
+        #fff;
     }
-    .topbar{
-      padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
-      border-bottom:1px solid var(--border); background:linear-gradient(90deg,#fff,#fff4fa);
+
+    .shell{
+      width: min(980px, 100%);
+      height: min(780px, 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.86);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      position:relative;
     }
-    .topbar .title{ display:flex; align-items:center; gap:10px; font-weight:900; }
+
+    /* top bar — clean + editorial */
+    header{
+      padding: 22px 22px 14px;
+      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      background: rgba(255,255,255,.82);
+    }
+
+    .title{
+      min-width:0;
+    }
+    .title h1{
+      margin:0;
+      font-family: var(--serif);
+      font-weight: 600;
+      letter-spacing: .2px;
+      font-size: 26px;
+      line-height: 1.05;
+    }
+    .title p{
+      margin:8px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+
+    .pills{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
     .pill{
-      font-size:12px; padding:6px 10px; border-radius:999px;
-      border:1px solid var(--border); background:#fff; color:var(--pink); font-weight:800;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .2px;
+      box-shadow: 0 10px 18px rgba(31,26,34,.06);
+      user-select:none;
     }
-    .chat{ flex:1; padding:18px; overflow:auto; display:flex; flex-direction:column; gap:12px; }
-    .msg-row{ display:flex; gap:10px; align-items:flex-end; }
-    .msg-row.you{ justify-content:flex-end; }
-    .bubble{
-      max-width:min(720px,85%); padding:12px 14px; border-radius:18px;
-      border:1px solid var(--border); background:#fff;
-      box-shadow:0 8px 18px rgba(0,0,0,0.06); font-size:15px; line-height:1.35;
-      white-space:pre-wrap;
-    }
-    .bubble.bbg{ background:linear-gradient(180deg,#fff,#fff1f8); }
-    .bubble.you{
-      background:linear-gradient(135deg,var(--pink),var(--pink2));
-      border:none; color:#fff; box-shadow:var(--shadow);
-    }
-    .meta{ font-size:12px; color:var(--muted); margin-top:6px; }
-    .meta.right{ text-align:right; }
+    .pill strong{ font-weight:700; }
 
-    .composer-wrap{ border-top:1px solid var(--border); padding:14px; background:linear-gradient(180deg,#fff,#fff1f8); }
+    /* chat area */
+    .chat{
+      flex:1;
+      overflow:auto;
+      padding: 22px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      scroll-behavior:smooth;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+    }
+    .row.you{ justify-content:flex-end; }
+
+    .bubble{
+      max-width: min(720px, 88%);
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+      line-height: 1.45;
+      font-size: 15px;
+      white-space: pre-wrap;
+      position:relative;
+    }
+
+    /* ChatBBG bubble: soft wash, minimal */
+    .bubble.bbg{
+      background: linear-gradient(180deg, #fff, var(--pinkWash));
+      border-color: rgba(255,95,182,.20);
+    }
+
+    /* User bubble: clean dark text, soft pink outline (not a big pink blob) */
+    .bubble.you{
+      background: #fff;
+      border-color: rgba(255,95,182,.45);
+      box-shadow: 0 10px 18px rgba(255,95,182,.10);
+    }
+
+    .meta{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .dotsep{
+      width:3px;height:3px;border-radius:50%;
+      background: rgba(111,100,112,.7);
+      display:inline-block;
+    }
+
+    /* typing */
+    .typing{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:2px 0;
+    }
+    .td{
+      width:7px;height:7px;border-radius:999px;
+      background: var(--pink);
+      opacity:.55;
+      animation: bounce 1s infinite ease-in-out;
+    }
+    .td:nth-child(2){ animation-delay:.15s; }
+    .td:nth-child(3){ animation-delay:.3s; }
+    @keyframes bounce{
+      0%,100%{ transform: translateY(0); opacity:.45; }
+      50%{ transform: translateY(-4px); opacity:1; }
+    }
+
+    /* composer */
     .composer{
-      display:flex; gap:10px; align-items:flex-end; background:#fff;
-      border:1px solid var(--border); border-radius:20px; padding:10px;
-      box-shadow:0 8px 18px rgba(0,0,0,0.06);
+      padding: 16px 22px 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.88);
+    }
+    .box{
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 10px 10px 14px;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      background: #fff;
+      box-shadow: 0 14px 26px rgba(31,26,34,.08);
     }
     textarea{
-      width:100%; border:none; outline:none; resize:none;
-      font-family:var(--font); font-size:15px; line-height:1.35; padding:8px; max-height:140px;
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.45;
+      padding: 8px 4px;
+      max-height: 150px;
+      background: transparent;
     }
     .send{
-      border:none; cursor:pointer; flex-shrink:0; width:44px; height:44px;
-      border-radius:16px; background:linear-gradient(135deg,var(--pink),var(--pink2));
-      color:#fff; font-weight:900; box-shadow:var(--shadow);
-      display:grid; place-items:center;
+      width: 46px;
+      height: 46px;
+      border:none;
+      cursor:pointer;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--pink), var(--pink2));
+      color:#fff;
+      font-weight: 800;
+      box-shadow: 0 14px 24px rgba(255,95,182,.22);
+      transition: transform .08s ease;
+    }
+    .send:active{ transform: translateY(1px); }
+
+    .footerline{
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .disclaimer{
+      text-align:center;
+      width:100%;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
     }
 
-    .typing{ display:inline-flex; gap:6px; align-items:center; }
-    .dot{ width:7px;height:7px;border-radius:999px;background:var(--pink);opacity:.6; animation:bounce 1s infinite ease-in-out; }
-    .dot:nth-child(2){ animation-delay:.15s; } .dot:nth-child(3){ animation-delay:.3s; }
-    @keyframes bounce{ 0%,100%{ transform:translateY(0); opacity:.5;} 50%{ transform:translateY(-4px); opacity:1;} }
-
-    @media (max-width:900px){ .sidebar{ display:none; } .app{ padding:10px; } }
+    @media (max-width: 640px){
+      .page{ padding:14px; }
+      header{ padding:18px 16px 12px; }
+      .chat{ padding:16px; }
+      .composer{ padding:14px 16px 16px; }
+      .pills{ display:none; }
+      .title p{ max-width: 42ch; }
+    }
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="side-top">
-        <div class="logo">BBG</div>
-        <div class="brand">
-          <div class="name">ChatBBG</div>
-          <div class="tag">pink • cutesy • comfy</div>
+  <div class="page">
+    <div class="shell">
+      <header>
+        <div class="title">
+          <h1>ChatBBG</h1>
+          <p>Soft advice + cute help ✿ hair, makeup, study, healthy habits, and relationships.</p>
         </div>
-        <button class="new-chat" id="newChatBtn">+ New</button>
-      </div>
 
-      <div class="side-list">
-        <div class="side-item active"><div class="title">💗 Welcome chat</div><div class="time">now</div></div>
-        <div class="side-item"><div class="title">🎀 Homework helper</div><div class="time">yday</div></div>
-        <div class="side-item"><div class="title">✨ Outfit ideas</div><div class="time">2d</div></div>
-      </div>
-
-      <div class="side-bottom">
-        <div class="avatar">M</div>
-        <div class="me"><div class="who">Morola</div><div class="status">online ✿</div></div>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="title"><span>ChatBBG 💗</span><span class="pill">live</span></div>
-        <span class="pill" id="statusPill">♡ ready</span>
-      </div>
+        <div class="pills" aria-hidden="true">
+          <div class="pill"><strong>hair</strong></div>
+          <div class="pill"><strong>makeup</strong></div>
+          <div class="pill"><strong>weight</strong></div>
+          <div class="pill"><strong>study</strong></div>
+          <div class="pill"><strong>boy tips</strong></div>
+        </div>
+      </header>
 
       <section class="chat" id="chat"></section>
 
-      <div class="composer-wrap">
-        <div class="composer">
-          <textarea id="input" rows="1" placeholder="message ChatBBG… ✿"></textarea>
+      <div class="composer">
+        <div class="box">
+          <textarea id="input" rows="1" placeholder="Message ChatBBG…"></textarea>
           <button class="send" id="sendBtn" title="Send">➤</button>
         </div>
-        <div class="meta" style="padding:8px 6px 0;">
-          tip: Enter to send • Shift+Enter for a new line
+
+        <div class="footerline">
+          <span>Enter = send • Shift+Enter = new line</span>
+          <span id="modeHint">Replies are not saved</span>
         </div>
+
+        <div class="disclaimer">ChatBBG can make mistakes. Check important info.</div>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
     const chat = document.getElementById("chat");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
-    const newChatBtn = document.getElementById("newChatBtn");
-    const statusPill = document.getElementById("statusPill");
-
-    // simple memory for the conversation:
-    const messages = [
-      { role: "system", content:
-        "You are ChatBBG, a cute, friendly, pink-themed chatbot. Use a playful, supportive tone. Keep it safe and helpful."
-      },
-      { role: "assistant", content: "hiii bestie 💕 i’m ChatBBG! what are we building today? ✨" }
-    ];
 
     function autoGrow(el){
       el.style.height = "auto";
-      el.style.height = Math.min(el.scrollHeight, 140) + "px";
+      el.style.height = Math.min(el.scrollHeight, 150) + "px";
     }
     input.addEventListener("input", () => autoGrow(input));
 
-    function addMsg(text, who="bbg"){
+    function addBubble(text, who="bbg"){
       const row = document.createElement("div");
-      row.className = "msg-row " + (who === "you" ? "you" : "bbg");
+      row.className = "row " + (who === "you" ? "you" : "bbg");
 
       const bubble = document.createElement("div");
       bubble.className = "bubble " + (who === "you" ? "you" : "bbg");
       bubble.textContent = text;
 
       const meta = document.createElement("div");
-      meta.className = "meta" + (who === "you" ? " right" : "");
-      meta.textContent = (who === "you" ? "You" : "ChatBBG") + " • just now";
+      meta.className = "meta";
+      const name = document.createElement("span");
+      name.textContent = who === "you" ? "You" : "ChatBBG";
+      const sep = document.createElement("span");
+      sep.className = "dotsep";
+      const time = document.createElement("span");
+      time.textContent = "just now";
+
+      meta.appendChild(name);
+      meta.appendChild(sep);
+      meta.appendChild(time);
       bubble.appendChild(meta);
 
       row.appendChild(bubble);
@@ -203,16 +339,16 @@
 
     function addTyping(){
       const row = document.createElement("div");
-      row.className = "msg-row bbg";
+      row.className = "row bbg";
       row.id = "typingRow";
 
       const bubble = document.createElement("div");
       bubble.className = "bubble bbg";
       bubble.innerHTML = `
         <span class="typing" aria-label="ChatBBG is typing">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="td"></span><span class="td"></span><span class="td"></span>
         </span>
-        <div class="meta">ChatBBG • typing…</div>
+        <div class="meta"><span>ChatBBG</span><span class="dotsep"></span><span>typing…</span></div>
       `;
       row.appendChild(bubble);
       chat.appendChild(row);
@@ -220,52 +356,123 @@
     }
 
     function removeTyping(){
-      const row = document.getElementById("typingRow");
-      if(row) row.remove();
+      document.getElementById("typingRow")?.remove();
     }
 
-    async function callBackend(){
-      statusPill.textContent = "♡ thinking…";
-      addTyping();
+    // prompt recognition (simple + expand anytime)
+    const routes = [
+      { name: "hair tips", keywords: ["hair","frizz","curl","curly","coily","straight","shampoo","conditioner","split ends","oily scalp","dry scalp","heat damage"] },
+      { name: "makeup tips", keywords: ["makeup","foundation","concealer","blush","mascara","eyeliner","lip","brows","contour","highlighter","primer","setting spray"] },
+      { name: "weight management", keywords: ["weight","lose","fat","calorie","diet","workout","gym","scale","cut","bulk","steps","protein"] },
+      { name: "studying help", keywords: ["study","studying","homework","assignment","exam","test","quiz","notes","focus","procrastinate","school","revision"] },
+      { name: "boy tips", keywords: ["boy","crush","dating","relationship","situationship","text him","text her","ghosting","red flag","green flag","talking stage"] },
+    ];
 
-      try{
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ messages })
-        });
-
-        if(!res.ok){
-          const errText = await res.text();
-          throw new Error(errText || "Request failed");
-        }
-
-        const data = await res.json();
-        removeTyping();
-        statusPill.textContent = "♡ ready";
-
-        const reply = data.reply || "(no reply 😭)";
-        messages.push({ role:"assistant", content: reply });
-        addMsg(reply, "bbg");
-      } catch (err){
-        removeTyping();
-        statusPill.textContent = "♡ oops";
-        addMsg("omg sorry bestie 😭 the server said: " + err.message, "bbg");
-        console.error(err);
+    function detectCategory(text){
+      const t = text.toLowerCase();
+      let best = { name:"general", score:0 };
+      for(const r of routes){
+        let score = 0;
+        for(const k of r.keywords) if(t.includes(k)) score++;
+        if(score > best.score) best = { name:r.name, score };
       }
+      return best.score ? best.name : "general";
+    }
+
+    function replyFor(category){
+      const safety = "If anything feels serious/unsafe, please talk to a trusted adult or a professional, ok? 💗";
+
+      if(category === "hair tips"){
+        return [
+          "hair tips time ✿",
+          "Tell me your hair type (straight/wavy/curly/coily) + what’s wrong (frizz, dryness, oily scalp).",
+          "",
+          "Quick fixes:",
+          "• frizz: microfiber towel + leave-in + avoid brushing dry curls",
+          "• dry ends: trim + oil only on ends (not scalp)",
+          "• oily scalp: shampoo twice, condition only mid-length to ends",
+          "• heat: heat protectant + lower temp + fewer passes"
+        ].join("\n");
+      }
+
+      if(category === "makeup tips"){
+        return [
+          "ok pretty ✿ makeup help!",
+          "What’s your skin type (oily/dry/combo) + vibe (natural, soft glam, full glam)?",
+          "",
+          "Quick wins:",
+          "• base looking cakey: use less + damp sponge + set only where shiny",
+          "• separation: prep with moisturizer, let it sink in 2–3 mins",
+          "• smudgy mascara: light powder under eyes or waterproof mascara",
+          "• blush: higher on cheeks = lifted look"
+        ].join("\n");
+      }
+
+      if(category === "weight management"){
+        return [
+          "gentle habits mode ✿ (not medical advice)",
+          "If you’re under 18: focus on strength, energy, and balance—not extreme dieting.",
+          "",
+          "Basics that actually work:",
+          "• plate: protein + carbs + colorful veg + healthy fats",
+          "• sleep + water = underrated glow-up",
+          "• move in a fun way 3–5x/week (walk, dance, sport)",
+          "• avoid extremes—small steps stay longer",
+          "",
+          safety
+        ].join("\n");
+      }
+
+      if(category === "studying help"){
+        return [
+          "study mode ✿",
+          "Tell me the subject + due date + what you don’t get yet.",
+          "",
+          "Fast plan:",
+          "1) 25 min focus + 5 min break (x3)",
+          "2) tiny checklist (3–5 tasks)",
+          "3) active recall: explain it like you’re teaching",
+          "4) practice questions > rereading"
+        ].join("\n");
+      }
+
+      if(category === "boy tips"){
+        return [
+          "ok bestie ✿ relationship tea, but wise",
+          "What happened + what do you WANT (friends, talking, dating)?",
+          "",
+          "Quick rules:",
+          "• if they like you, it won’t feel confusing 24/7",
+          "• match energy—don’t chase",
+          "• green flags: consistent, respectful, clear",
+          "• red flags: hot/cold, pressures you, rude",
+          "",
+          safety
+        ].join("\n");
+      }
+
+      return [
+        "hiii ✿",
+        "I can do: hair, makeup, healthy habits, studying, or boy tips.",
+        "Tell me what you need + a tiny bit of context, and I’ll make it easy + cute."
+      ].join("\n");
     }
 
     function send(){
       const text = input.value.trim();
       if(!text) return;
 
-      messages.push({ role:"user", content: text });
-      addMsg(text, "you");
-
+      addBubble(text, "you");
       input.value = "";
       autoGrow(input);
 
-      callBackend();
+      addTyping();
+      const category = detectCategory(text);
+
+      setTimeout(() => {
+        removeTyping();
+        addBubble(replyFor(category), "bbg");
+      }, 420);
     }
 
     sendBtn.addEventListener("click", send);
@@ -276,18 +483,8 @@
       }
     });
 
-    newChatBtn.addEventListener("click", () => {
-      chat.innerHTML = "";
-      messages.splice(0, messages.length,
-        { role:"system", content:"You are ChatBBG, a cute, friendly, pink-themed chatbot. Use a playful, supportive tone. Keep it safe and helpful." },
-        { role:"assistant", content:"hiii bestie 💕 fresh chat unlocked ✨ what’s up?" }
-      );
-      addMsg(messages[1].content, "bbg");
-      statusPill.textContent = "♡ ready";
-    });
-
-    // initial render
-    addMsg(messages[1].content, "bbg");
+    // intro
+    addBubble("hi bestie ✿ i’m ChatBBG.\ntry: “hair tips for frizz” or “study plan for a bio test” or “makeup tips for oily skin”.", "bbg");
   </script>
 </body>
 </html>
