@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChatBBG</title>
 
-  <!-- soft, editorial-ish fonts -->
+  <!-- clean editorial fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
@@ -39,7 +39,6 @@
       overflow:hidden;
     }
 
-    /* subtle page texture */
     .page{
       height:100%;
       display:flex;
@@ -47,9 +46,9 @@
       justify-content:center;
       padding:28px;
       background:
-        radial-gradient(900px 500px at 15% 15%, rgba(255, 95, 182, .06), transparent 60%),
-        radial-gradient(900px 500px at 85% 25%, rgba(255, 138, 208, .06), transparent 60%),
-        radial-gradient(800px 450px at 55% 95%, rgba(255, 95, 182, .04), transparent 55%),
+        radial-gradient(900px 520px at 15% 15%, rgba(255, 95, 182, .06), transparent 60%),
+        radial-gradient(900px 520px at 85% 25%, rgba(255, 138, 208, .06), transparent 60%),
+        radial-gradient(800px 460px at 55% 95%, rgba(255, 95, 182, .04), transparent 55%),
         #fff;
     }
 
@@ -64,10 +63,8 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      position:relative;
     }
 
-    /* top bar — clean + editorial */
     header{
       padding: 22px 22px 14px;
       border-bottom: 1px solid var(--line);
@@ -93,29 +90,9 @@
       margin:8px 0 0;
       font-size: 13px;
       color: var(--muted);
-      max-width: 52ch;
+      max-width: 60ch;
     }
 
-    .pills{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .pill{
-      border: 1px solid var(--line);
-      background: #fff;
-      color: var(--ink);
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      letter-spacing: .2px;
-      box-shadow: 0 10px 18px rgba(31,26,34,.06);
-      user-select:none;
-    }
-    .pill strong{ font-weight:700; }
-
-    /* chat area */
     .chat{
       flex:1;
       overflow:auto;
@@ -145,13 +122,11 @@
       position:relative;
     }
 
-    /* ChatBBG bubble: soft wash, minimal */
     .bubble.bbg{
       background: linear-gradient(180deg, #fff, var(--pinkWash));
       border-color: rgba(255,95,182,.20);
     }
 
-    /* User bubble: clean dark text, soft pink outline (not a big pink blob) */
     .bubble.you{
       background: #fff;
       border-color: rgba(255,95,182,.45);
@@ -172,7 +147,6 @@
       display:inline-block;
     }
 
-    /* typing */
     .typing{
       display:inline-flex;
       gap:6px;
@@ -192,7 +166,6 @@
       50%{ transform: translateY(-4px); opacity:1; }
     }
 
-    /* composer */
     .composer{
       padding: 16px 22px 18px;
       border-top: 1px solid var(--line);
@@ -257,7 +230,6 @@
       header{ padding:18px 16px 12px; }
       .chat{ padding:16px; }
       .composer{ padding:14px 16px 16px; }
-      .pills{ display:none; }
       .title p{ max-width: 42ch; }
     }
   </style>
@@ -269,15 +241,7 @@
       <header>
         <div class="title">
           <h1>ChatBBG</h1>
-          <p>Soft advice + cute help ✿ hair, makeup, study, healthy habits, and relationships.</p>
-        </div>
-
-        <div class="pills" aria-hidden="true">
-          <div class="pill"><strong>hair</strong></div>
-          <div class="pill"><strong>makeup</strong></div>
-          <div class="pill"><strong>weight</strong></div>
-          <div class="pill"><strong>study</strong></div>
-          <div class="pill"><strong>boy tips</strong></div>
+          <p>Ask me literally anything ✿ I’m cute, a bit sassy, and occasionally wrong (like all icons).</p>
         </div>
       </header>
 
@@ -291,7 +255,7 @@
 
         <div class="footerline">
           <span>Enter = send • Shift+Enter = new line</span>
-          <span id="modeHint">Replies are not saved</span>
+          <span>No chat history saved</span>
         </div>
 
         <div class="disclaimer">ChatBBG can make mistakes. Check important info.</div>
@@ -304,6 +268,7 @@
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("sendBtn");
 
+    // ---------- UI helpers ----------
     function autoGrow(el){
       el.style.height = "auto";
       el.style.height = Math.min(el.scrollHeight, 150) + "px";
@@ -359,105 +324,267 @@
       document.getElementById("typingRow")?.remove();
     }
 
-    // prompt recognition (simple + expand anytime)
+    // ---------- Tiny "more advanced AI" brain (still offline + GitHub safe) ----------
+    // Utility
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    function normalize(text){
+      return text.toLowerCase().trim();
+    }
+
+    function wordsOf(text){
+      return (text.toLowerCase().match(/[a-z']+/g) || []);
+    }
+
+    function containsAnyWord(wordSet, list){
+      for(const w of list){
+        if(wordSet.has(w)) return true;
+      }
+      return false;
+    }
+
+    // Basic math evaluator: supports + - * / ( ) decimals
+    // Safety: only allow digits, operators, parentheses, whitespace, and dots.
+    function tryMath(userText){
+      let t = userText.toLowerCase().trim();
+
+      // common phrasing: "what's 2+2" / "whats 10 / 2"
+      t = t.replace(/^what('?s| is)\s+/i, "");
+      t = t.replace(/\?+$/g, "").trim();
+
+      const allowed = /^[0-9+\-*/().\s]+$/;
+      if(!allowed.test(t)) return null;
+
+      // must contain at least one operator to avoid answering "2026" as math
+      if(!/[+\-*/]/.test(t)) return null;
+
+      try{
+        // eslint-disable-next-line no-new-func
+        const result = Function("return (" + t + ")")();
+        if (typeof result !== "number" || !isFinite(result)) return null;
+
+        // pretty formatting
+        const rounded = Math.abs(result) < 1e12 ? result : result;
+        const out = Number.isInteger(rounded) ? String(rounded) : String(Math.round(rounded * 100000) / 100000);
+        return out;
+      } catch {
+        return null;
+      }
+    }
+
+    // Category routes (whole word + phrases)
     const routes = [
-      { name: "hair tips", keywords: ["hair","frizz","curl","curly","coily","straight","shampoo","conditioner","split ends","oily scalp","dry scalp","heat damage"] },
-      { name: "makeup tips", keywords: ["makeup","foundation","concealer","blush","mascara","eyeliner","lip","brows","contour","highlighter","primer","setting spray"] },
-      { name: "weight management", keywords: ["weight","lose","fat","calorie","diet","workout","gym","scale","cut","bulk","steps","protein"] },
-      { name: "studying help", keywords: ["study","studying","homework","assignment","exam","test","quiz","notes","focus","procrastinate","school","revision"] },
-      { name: "boy tips", keywords: ["boy","crush","dating","relationship","situationship","text him","text her","ghosting","red flag","green flag","talking stage"] },
+      { name: "hair tips",
+        words: ["hair","frizz","curl","curly","coily","straight","shampoo","conditioner","split","ends","oily","scalp","dry","heat","damage"],
+        phrases: ["split ends","oily scalp","dry scalp","heat damage"]
+      },
+      { name: "makeup tips",
+        words: ["makeup","foundation","concealer","blush","mascara","eyeliner","lip","brows","contour","highlighter","primer","powder"],
+        phrases: ["setting spray","under eye","full glam","soft glam"]
+      },
+      { name: "weight management",
+        words: ["weight","lose","loss","fat","calorie","calories","diet","workout","gym","scale","steps","protein","cardio"],
+        phrases: ["weight loss","calorie deficit","lose weight"]
+      },
+      { name: "studying help",
+        words: ["study","studying","homework","assignment","exam","test","quiz","notes","focus","procrastinate","school","revision"],
+        phrases: ["study plan","practice questions","exam tomorrow"]
+      },
+      { name: "boy tips",
+        words: ["boy","crush","dating","date","relationship","situationship","ghosting","red","flag","green","text"],
+        phrases: ["text him","text her","talking stage","red flag","green flag"]
+      },
     ];
 
-    function detectCategory(text){
-      const t = text.toLowerCase();
+    function detectCategory(userText){
+      const t = normalize(userText);
+      const w = new Set(wordsOf(t));
+
       let best = { name:"general", score:0 };
+
       for(const r of routes){
         let score = 0;
-        for(const k of r.keywords) if(t.includes(k)) score++;
+
+        for(const ph of r.phrases){
+          if(t.includes(ph)) score += 2;
+        }
+        for(const word of r.words){
+          if(w.has(word)) score += 1;
+        }
+
         if(score > best.score) best = { name:r.name, score };
       }
-      return best.score ? best.name : "general";
+
+      // require at least 2 to classify, so “oh cute” won't trigger random topics
+      return best.score >= 2 ? best.name : "general";
     }
 
-    function replyFor(category){
-      const safety = "If anything feels serious/unsafe, please talk to a trusted adult or a professional, ok? 💗";
+    // Response banks (sassier + varied)
+    const sass = {
+      greetings: [
+        "hi bestie ✿ what’s the vibe today?",
+        "hey hey ✿ i’m here, i’m cute, and i’m listening.",
+        "hiii ✿ say less. what do we need?"
+      ],
+      thanks: [
+        "of course ✿ i was born for this (i was coded for this).",
+        "anytime bestie ✿ now go be iconic.",
+        "period ✿ you’re welcome."
+      ],
+      compliments: [
+        "stoppp ✿ you’re gonna inflate my ego (and i don’t even have lungs).",
+        "aw thank you ✿ i’m blushing in hex codes.",
+        "you’re sweet ✿ i’ll remember this forever (until you refresh the page)."
+      ],
+      fallback: [
+        "I can help with anything, but I do have limitations due to being created by a 15 year old.",
+        "ok so… i *can* help, but i’m not a wizard. i’m a webpage. ✿",
+        "i’ll do my best, but if i start acting suspicious, blame JavaScript."
+      ]
+    };
 
-      if(category === "hair tips"){
-        return [
-          "hair tips time ✿",
-          "Tell me your hair type (straight/wavy/curly/coily) + what’s wrong (frizz, dryness, oily scalp).",
-          "",
-          "Quick fixes:",
-          "• frizz: microfiber towel + leave-in + avoid brushing dry curls",
-          "• dry ends: trim + oil only on ends (not scalp)",
-          "• oily scalp: shampoo twice, condition only mid-length to ends",
-          "• heat: heat protectant + lower temp + fewer passes"
-        ].join("\n");
-      }
-
-      if(category === "makeup tips"){
-        return [
-          "ok pretty ✿ makeup help!",
-          "What’s your skin type (oily/dry/combo) + vibe (natural, soft glam, full glam)?",
-          "",
-          "Quick wins:",
-          "• base looking cakey: use less + damp sponge + set only where shiny",
-          "• separation: prep with moisturizer, let it sink in 2–3 mins",
-          "• smudgy mascara: light powder under eyes or waterproof mascara",
-          "• blush: higher on cheeks = lifted look"
-        ].join("\n");
-      }
-
-      if(category === "weight management"){
-        return [
-          "gentle habits mode ✿ (not medical advice)",
-          "If you’re under 18: focus on strength, energy, and balance—not extreme dieting.",
-          "",
-          "Basics that actually work:",
-          "• plate: protein + carbs + colorful veg + healthy fats",
-          "• sleep + water = underrated glow-up",
-          "• move in a fun way 3–5x/week (walk, dance, sport)",
-          "• avoid extremes—small steps stay longer",
-          "",
-          safety
-        ].join("\n");
-      }
-
-      if(category === "studying help"){
-        return [
-          "study mode ✿",
-          "Tell me the subject + due date + what you don’t get yet.",
-          "",
-          "Fast plan:",
-          "1) 25 min focus + 5 min break (x3)",
-          "2) tiny checklist (3–5 tasks)",
-          "3) active recall: explain it like you’re teaching",
-          "4) practice questions > rereading"
-        ].join("\n");
-      }
-
-      if(category === "boy tips"){
-        return [
-          "ok bestie ✿ relationship tea, but wise",
-          "What happened + what do you WANT (friends, talking, dating)?",
-          "",
-          "Quick rules:",
-          "• if they like you, it won’t feel confusing 24/7",
-          "• match energy—don’t chase",
-          "• green flags: consistent, respectful, clear",
-          "• red flags: hot/cold, pressures you, rude",
-          "",
-          safety
-        ].join("\n");
-      }
-
-      return [
-        "hiii ✿",
-        "I can do: hair, makeup, healthy habits, studying, or boy tips.",
-        "Tell me what you need + a tiny bit of context, and I’ll make it easy + cute."
+    function replyHair(){
+      const openers = [
+        "hair tips time ✿ let’s fix the drama.",
+        "ok hair bestie ✿ we’re doing a mini glow-up.",
+        "say less ✿ hair rehab incoming."
+      ];
+      const body = [
+        "Tell me your hair type (straight/wavy/curly/coily) + what’s happening (frizz, dry ends, oily scalp).",
+        "",
+        "Quick wins:",
+        "• frizz: microfiber towel + leave-in + don’t brush dry curls",
+        "• dry ends: tiny trim + oil only on ends",
+        "• oily scalp: shampoo twice, condition mid-length to ends only",
+        "• heat: protectant + lower temp + fewer passes",
       ].join("\n");
+      return pick(openers) + "\n\n" + body;
     }
 
+    function replyMakeup(){
+      const openers = [
+        "makeup moment ✿ let’s make it EFFORTLESS.",
+        "ok glam ✿ we’re not doing cakey today.",
+        "cute ✿ makeup tips incoming like a PR package."
+      ];
+      const body = [
+        "Tell me your skin type (oily/dry/combo) + vibe (natural, soft glam, full glam).",
+        "",
+        "Quick wins:",
+        "• cakey base: use less + damp sponge + set only where shiny",
+        "• patchy foundation: moisturize, wait 2–3 mins, then apply",
+        "• smudgy mascara: light powder under eyes or waterproof",
+        "• blush: higher on cheeks = lifted look",
+      ].join("\n");
+      return pick(openers) + "\n\n" + body;
+    }
+
+    function replyWeight(){
+      const openers = [
+        "ok gentle habits ✿ we’re doing healthy, not miserable.",
+        "bestie ✿ balance > extremes, always.",
+        "let’s do this the sane way ✿ no chaos diets."
+      ];
+      const body = [
+        "Not medical advice, just general tips.",
+        "If you’re under 18: focus on strength, energy, and balance—not extreme dieting.",
+        "",
+        "Basics that work:",
+        "• plate: protein + carbs + colorful veg + healthy fats",
+        "• sleep + water = underrated glow-up",
+        "• move in a fun way 3–5x/week (walk, dance, sport)",
+        "• avoid extremes—small steps stick",
+        "",
+        "If anything feels serious/unsafe, talk to a trusted adult or a professional 💗"
+      ].join("\n");
+      return pick(openers) + "\n\n" + body;
+    }
+
+    function replyStudy(){
+      const openers = [
+        "study mode ✿ i’m your academic sidekick.",
+        "ok scholar ✿ let’s cook (respectfully).",
+        "bestie ✿ we’re about to defeat procrastination."
+      ];
+      const body = [
+        "Tell me the subject + due date + what you don’t get yet.",
+        "",
+        "Fast plan:",
+        "1) 25 min focus + 5 min break (x3)",
+        "2) tiny checklist (3–5 tasks)",
+        "3) active recall: explain it like you’re teaching",
+        "4) practice questions > rereading",
+      ].join("\n");
+      return pick(openers) + "\n\n" + body;
+    }
+
+    function replyBoy(){
+      const openers = [
+        "ok bestie ✿ give me the tea. i’m seated.",
+        "relationship HQ ✿ let’s be smart-cute about it.",
+        "boy tips ✿ because someone has to be rational here."
+      ];
+      const body = [
+        "Tell me what happened + what you want (friends, talking stage, dating).",
+        "",
+        "Quick rules:",
+        "• if they like you, it won’t feel confusing 24/7",
+        "• match energy—don’t chase",
+        "• green flags: consistent, respectful, clear",
+        "• red flags: hot/cold, pressures you, rude",
+        "",
+        "If anything feels unsafe, talk to a trusted adult 💗"
+      ].join("\n");
+      return pick(openers) + "\n\n" + body;
+    }
+
+    function replyGeneral(userText){
+      const t = normalize(userText);
+      const wset = new Set(wordsOf(t));
+
+      // greetings
+      if (/^(hi|hey|hello|yo|hiii|hiya)\b/.test(t)) return pick(sass.greetings);
+
+      // thanks
+      if (containsAnyWord(wset, ["thanks","thank","thx","ty"])) return pick(sass.thanks);
+
+      // compliments
+      if (t.includes("cute") || t.includes("love you") || t.includes("pretty") || t.includes("slay") || t.includes("icon")) {
+        return pick(sass.compliments);
+      }
+
+      // math
+      const math = tryMath(userText);
+      if (math !== null) {
+        const snark = [
+          `It’s ${math}. ✿ math ate, you didn’t even have to.`,
+          `${math}. next question, your honor.`,
+          `${math}. i fear i’m basically a calculator with eyeliner.`
+        ];
+        return pick(snark);
+      }
+
+      // fallback
+      const prefix = pick(sass.fallback);
+      const follow = [
+        "",
+        "Tell me what you need and add details (what you tried, what you want, any constraints).",
+        "I’ll respond with the best answer i can ✿"
+      ].join("\n");
+      return prefix + "\n" + follow;
+    }
+
+    function generateReply(userText){
+      const cat = detectCategory(userText);
+      if (cat === "hair tips") return replyHair();
+      if (cat === "makeup tips") return replyMakeup();
+      if (cat === "weight management") return replyWeight();
+      if (cat === "studying help") return replyStudy();
+      if (cat === "boy tips") return replyBoy();
+      return replyGeneral(userText);
+    }
+
+    // ---------- Send ----------
     function send(){
       const text = input.value.trim();
       if(!text) return;
@@ -467,11 +594,10 @@
       autoGrow(input);
 
       addTyping();
-      const category = detectCategory(text);
 
       setTimeout(() => {
         removeTyping();
-        addBubble(replyFor(category), "bbg");
+        addBubble(generateReply(text), "bbg");
       }, 420);
     }
 
@@ -484,7 +610,10 @@
     });
 
     // intro
-    addBubble("hi bestie ✿ i’m ChatBBG.\ntry: “hair tips for frizz” or “study plan for a bio test” or “makeup tips for oily skin”.", "bbg");
+    addBubble(
+      "hi bestie ✿ i’m ChatBBG.\nI can help with anything, but I do have limitations due to being created by a 15 year old.\n\ntry: “what’s 2+2?” or “makeup tips for oily skin” 😌",
+      "bbg"
+    );
   </script>
 </body>
 </html>
