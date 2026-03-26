@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatBBG</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.2/lib/browser/math.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f7f2ec;
+      --panel:#fbf8f4;
+      --paper:#fffdfa;
+      --ink:#1f1b19;
+      --muted:#7b736e;
+      --line:rgba(31,27,25,.11);
+      --rose:#dca5b8;
+      --rose-deep:#b87b92;
+      --rose-soft:rgba(220,165,184,.18);
+      --gold:#d6c0a0;
+      --shadow:0 24px 60px rgba(49,37,30,.08);
+      --radius:24px;
+      --radius-lg:34px;
+      --serif:"Cormorant Garamond", Georgia, serif;
+      --sans:"DM Sans", system-ui, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--ink);
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(214,192,160,.22), transparent 60%),
+        radial-gradient(800px 480px at 90% 15%, rgba(220,165,184,.17), transparent 58%),
+        linear-gradient(180deg, #faf6f1 0%, #f4eee7 100%);
+      overflow:hidden;
+    }
+
+    .page{
+      min-height:100%;
+      padding:24px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .shell{
+      width:min(1220px,100%);
+      height:min(850px,100%);
+      background:rgba(251,248,244,.92);
+      border:1px solid rgba(255,255,255,.55);
+      box-shadow:var(--shadow);
+      border-radius:40px;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:320px 1fr;
+      backdrop-filter:blur(10px);
+    }
+
+    .sidebar{
+      background:linear-gradient(180deg, rgba(255,253,250,.88), rgba(247,241,235,.95));
+      border-right:1px solid var(--line);
+      padding:26px 22px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .brandbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding-bottom:12px;
+      border-bottom:1px solid var(--line);
+    }
+
+    .brandmark{
+      width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;
+      border:1px solid rgba(184,123,146,.35);
+      background:linear-gradient(145deg,#fff8fc,#f7e8ef);
+      font-family:var(--serif);
+      font-size:22px;
+      color:var(--rose-deep);
+    }
+
+    .nav{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:lowercase;
+      letter-spacing:.06em;
+    }
+
+    .hero h1{
+      margin:0;
+      font-family:var(--serif);
+      font-size:54px;
+      line-height:.92;
+      font-weight:600;
+      letter-spacing:.01em;
+    }
+
+    .hero p{
+      margin:12px 0 0;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .card{
+      background:rgba(255,253,250,.8);
+      border:1px solid var(--line);
+      border-radius:26px;
+      padding:18px;
+    }
+
+    .card h2,
+    .card h3{
+      margin:0 0 10px;
+      font-family:var(--serif);
+      font-size:28px;
+      font-weight:600;
+    }
+
+    .card p,
+    .card li,
+    .card label,
+    .chip,
+    .helper{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+    }
+
+    .moods{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .mood-btn,.chip{
+      appearance:none;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.66);
+      color:var(--ink);
+      padding:10px 12px;
+      border-radius:999px;
+      font:inherit;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .mood-btn.active,
+    .mood-btn:hover,
+    .chip:hover{
+      border-color:rgba(184,123,146,.45);
+      background:linear-gradient(180deg, #fff, rgba(220,165,184,.16));
+      transform:translateY(-1px);
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:6px;
+    }
+
+    .main{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.45), rgba(255,255,255,.2));
+    }
+
+    header{
+      padding:24px 28px 18px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:flex-end;
+    }
+
+    .title h2{
+      margin:0;
+      font-family:var(--serif);
+      font-size:40px;
+      font-weight:600;
+      line-height:.95;
+    }
+
+    .title p{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      max-width:62ch;
+      line-height:1.6;
+    }
+
+    .pill{
+      padding:10px 14px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      background:rgba(255,255,255,.68);
+    }
+
+    .chat{
+      flex:1;
+      overflow:auto;
+      padding:24px 28px;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      scroll-behavior:smooth;
+    }
+
+    .row{display:flex;gap:10px;align-items:flex-end}
+    .row.you{justify-content:flex-end}
+
+    .bubble{
+      max-width:min(780px,90%);
+      padding:16px 18px 14px;
+      border-radius:24px;
+      border:1px solid var(--line);
+      background:rgba(255,253,250,.95);
+      font-size:15px;
+      line-height:1.65;
+      white-space:pre-wrap;
+      box-shadow:0 12px 30px rgba(40,31,27,.04);
+    }
+
+    .bubble.bbg{
+      background:linear-gradient(180deg, rgba(255,253,250,.98), rgba(220,165,184,.12));
+      border-color:rgba(184,123,146,.23);
+    }
+
+    .bubble.you{
+      background:linear-gradient(180deg, #fff, rgba(214,192,160,.14));
+      border-color:rgba(214,192,160,.45);
+    }
+
+    .meta{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .dotsep{width:3px;height:3px;border-radius:50%;background:rgba(123,115,110,.8)}
+
+    .typing{display:inline-flex;gap:6px;align-items:center;padding:2px 0}
+    .td{
+      width:7px;height:7px;border-radius:999px;background:var(--rose-deep);opacity:.5;
+      animation:bounce 1s infinite ease-in-out;
+    }
+    .td:nth-child(2){animation-delay:.15s}
+    .td:nth-child(3){animation-delay:.3s}
+
+    @keyframes bounce{
+      0%,100%{transform:translateY(0);opacity:.45}
+      50%{transform:translateY(-4px);opacity:1}
+    }
+
+    .composer{
+      padding:18px 28px 24px;
+      border-top:1px solid var(--line);
+      background:rgba(251,248,244,.85);
+    }
+
+    .box{
+      display:flex;
+      gap:12px;
+      align-items:flex-end;
+      padding:10px 10px 10px 16px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.86);
+      box-shadow:0 18px 36px rgba(45,33,28,.06);
+    }
+
+    textarea{
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      background:transparent;
+      font:inherit;
+      font-size:15px;
+      line-height:1.6;
+      max-height:150px;
+      padding:8px 4px;
+      color:var(--ink);
+    }
+
+    .send{
+      width:48px;height:48px;border:none;border-radius:50%;cursor:pointer;
+      background:linear-gradient(135deg, var(--rose-deep), var(--rose));
+      color:#fff;font-size:18px;font-weight:700;
+      box-shadow:0 14px 28px rgba(184,123,146,.25);
+      transition:.12s ease;
+    }
+    .send:hover{transform:translateY(-1px)}
+    .send:active{transform:translateY(1px)}
+
+    .footerline{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media (max-width: 980px){
+      body{overflow:auto}
+      .page{padding:12px}
+      .shell{height:auto;min-height:100dvh;grid-template-columns:1fr}
+      .sidebar{border-right:none;border-bottom:1px solid var(--line)}
+      .hero h1{font-size:44px}
+    }
+
+    @media (max-width: 640px){
+      header,.chat,.composer{padding-left:18px;padding-right:18px}
+      .title h2{font-size:34px}
+      .hero h1{font-size:38px}
+      .moods{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brandbar">
+          <div class="brandmark">C</div>
+          <div class="nav">
+            <span>home</span>
+            <span>vibes</span>
+            <span>study</span>
+            <span>math</span>
+          </div>
+        </div>
+
+        <section class="hero">
+          <h1>ChatBBG</h1>
+          <p>a soft, supportive chatbot with a little big-sister energy. it can react to moods, give practical advice, and help with math or calculus without using external AI.</p>
+        </section>
+
+        <section class="card">
+          <h2>Vibe profile</h2>
+          <p>Pick your mood so the replies feel more personal.</p>
+          <div class="moods" id="moodButtons"></div>
+          <p class="helper" id="moodStatus">Current mood: calm</p>
+        </section>
+
+        <section class="card">
+          <h3>Try these</h3>
+          <div class="chips" id="chips"></div>
+        </section>
+
+        <section class="card">
+          <h3>What makes it work</h3>
+          <p>Lists store moods, prompts, routes, affirmations, and responses. Functions use parameters like <strong>userText</strong> and <strong>userMood</strong> to choose what happens next.</p>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header>
+          <div class="title">
+            <h2>soft conversation, rule-based logic</h2>
+            <p>Inspired by airy editorial layouts and gentle typography, with a warmer palette and more personality. This version also adds mood-based affirmations and stronger study support.</p>
+          </div>
+          <div class="pill">no chat history saved</div>
+        </header>
+
+        <section class="chat" id="chat"></section>
+
+        <div class="composer">
+          <div class="box">
+            <textarea id="input" rows="1" placeholder="Message ChatBBG… (try: i'm sad / quiz me on cells / integral of 2x dx)"></textarea>
+            <button class="send" id="sendBtn" title="Send">➜</button>
+          </div>
+          <div class="footerline">
+            <span>Enter = send • Shift+Enter = new line</span>
+            <span>Rule-based chatbot for an AP-style project</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const chipsWrap = document.getElementById("chips");
+    const moodButtons = document.getElementById("moodButtons");
+    const moodStatus = document.getElementById("moodStatus");
+
+    const vibeProfile = {
+      mood: "calm",
+      style: "soft",
+      studyMode: true
+    };
+
+    const moodOptions = ["calm", "happy", "tired", "stressed", "sad", "confident"];
+
+    const quickPrompts = [
+      "hi",
+      "lol",
+      "i'm stressed",
+      "help me study biology",
+      "quiz me on photosynthesis",
+      "integral of 2x dx",
+      "how do i fix frizzy hair",
+      "bye"
+    ];
+
+    const affirmationCards = [
+      { moods:["sad","stressed","tired"], text:"You are still doing better than it feels right now. Take one small step, then another." },
+      { moods:["sad"], text:"You do not have to glow perfectly to be worthy. Rest still counts." },
+      { moods:["stressed"], text:"Breathe. You are not behind, you are in progress." },
+      { moods:["tired"], text:"Soft reset: water, stretch, one tiny task. That is enough for this moment." },
+      { moods:["happy","confident"], text:"You have good energy today. Use it on something that future-you will love." },
+      { moods:["calm"], text:"Steady looks beautiful on you. Keep going at a peaceful pace." }
+    ];
+
+    const studyTopics = {
+      biology: {
+        photosynthesis: {
+          summary: "Photosynthesis is the process plants use to turn light energy into chemical energy stored in glucose.",
+          flashcards: [
+            ["What organelle performs photosynthesis?", "Chloroplast"],
+            ["What pigment absorbs light?", "Chlorophyll"],
+            ["What gas goes in?", "Carbon dioxide"],
+            ["What sugar is produced?", "Glucose"]
+          ],
+          quiz: [
+            { q:"What organelle is responsible for photosynthesis?", a:"chloroplast" },
+            { q:"What gas do plants take in for photosynthesis?", a:"carbon dioxide" },
+            { q:"What pigment captures light energy?", a:"chlorophyll" }
+          ]
+        },
+        cells: {
+          summary: "Cells are the basic units of life. Plant cells have cell walls and chloroplasts, while animal cells do not.",
+          flashcards: [
+            ["Powerhouse of the cell?", "Mitochondria"],
+            ["Controls the cell?", "Nucleus"],
+            ["Found only in plant cells?", "Cell wall and chloroplasts"]
+          ],
+          quiz: [
+            { q:"What organelle controls cell activities?", a:"nucleus" },
+            { q:"What organelle makes energy for the cell?", a:"mitochondria" }
+          ]
+        }
+      },
+      history: {
+        revolution: {
+          summary: "A revolution is a major change in political power or social structure, often caused by unfair systems or public unrest.",
+          flashcards: [
+            ["What is a revolution?", "A major change in power or government"],
+            ["Common cause?", "Inequality or oppression"]
+          ],
+          quiz: [
+            { q:"What usually helps spark a revolution?", a:"inequality" }
+          ]
+        }
+      }
+    };
+
+    const INTENTS = [
+      { name:"goodbye", match:["bye","goodbye","cya","see ya","ttyl","gtg","good night","goodnight","gn"], replies:["bye bestie ✿ go be iconic.","ttyl ✿ drink some water for me.","goodnight ✿ may your pillow know peace."] },
+      { name:"greeting", match:["hi","hello","hey","hii","hiii","yo","sup","what's up","whats up"], replies:["hi bestie ✿ what’s the mood today?","hey angel ✿ talk to me.","hiii ✿ i’m here and listening."] },
+      { name:"lol", match:["lol","lmao","haha","hehe","😭","💀"], replies:["STOPPP 💀","ur so real for that 😭","i’m laughing in lowercase."] },
+      { name:"thanks", match:["thanks","thank you","thx","ty"], replies:["always ✿","of course bestie.","anytime ✿"] },
+      { name:"whoareyou", match:["who are you","what are you","help","commands"], replies:["I’m ChatBBG ✿ a rule-based chatbot with advice, study help, and math mode.","I can do vibes, studying, practical tips, and even calculus."] }
+    ];
+
+    const routes = [
+      { name:"hair tips", words:["hair","frizz","curl","shampoo","conditioner","scalp","split","ends","heat","damage"], phrases:["split ends","heat damage","frizzy hair"] },
+      { name:"makeup tips", words:["makeup","foundation","concealer","blush","mascara","eyeliner","brows","contour","primer"], phrases:["soft glam","setting spray"] },
+      { name:"studying help", words:["study","studying","homework","assignment","exam","test","quiz","notes","focus","revision","biology","history","math"], phrases:["study plan","practice questions","quiz me"] },
+      { name:"boy tips", words:["boy","crush","dating","date","relationship","situationship","ghosting","text","red","flag"], phrases:["text him","red flag","green flag"] },
+      { name:"confidence", words:["confidence","insecure","ugly","pretty","self esteem","self-esteem","nervous"], phrases:["feel ugly","feel insecure"] },
+      { name:"wellness", words:["cycle","period","cramps","sleep","wellness","energy","rest","burnout"], phrases:["cycle syncing","self care","self-care"] }
+    ];
+
+    function autoGrow(el){
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 150) + "px";
+    }
+    input.addEventListener("input", () => autoGrow(input));
+
+    function addBubble(text, who="bbg"){
+      const row = document.createElement("div");
+      row.className = "row " + (who === "you" ? "you" : "bbg");
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + (who === "you" ? "you" : "bbg");
+      bubble.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const name = document.createElement("span");
+      name.textContent = who === "you" ? "You" : "ChatBBG";
+      const sep = document.createElement("span");
+      sep.className = "dotsep";
+      const time = document.createElement("span");
+      time.textContent = "just now";
+
+      meta.appendChild(name);
+      meta.appendChild(sep);
+      meta.appendChild(time);
+      bubble.appendChild(meta);
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function addTyping(){
+      const row = document.createElement("div");
+      row.className = "row bbg";
+      row.id = "typingRow";
+      row.innerHTML = `
+        <div class="bubble bbg">
+          <span class="typing" aria-label="ChatBBG is typing">
+            <span class="td"></span><span class="td"></span><span class="td"></span>
+          </span>
+          <div class="meta"><span>ChatBBG</span><span class="dotsep"></span><span>typing…</span></div>
+        </div>`;
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function removeTyping(){
+      document.getElementById("typingRow")?.remove();
+    }
+
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const norm = (s) => (s || "").toLowerCase().trim();
+    const words = (s) => (s.toLowerCase().match(/[a-z']+/g) || []);
+    const wordSet = (s) => new Set(words(s));
+
+    function normalizeText(s){
+      return norm(s)
+        .replace(/\bim\b/g, "i'm")
+        .replace(/\bu\b/g, "you")
+        .replace(/\br\b/g, "are")
+        .replace(/\bpls\b/g, "please")
+        .replace(/\bplz\b/g, "please");
+    }
+
+    function setMood(newMood){
+      vibeProfile.mood = newMood;
+      moodStatus.textContent = `Current mood: ${newMood}`;
+      [...moodButtons.querySelectorAll("button")].forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mood === newMood);
+      });
+    }
+
+    function renderMoodButtons(){
+      moodButtons.innerHTML = "";
+      for(const mood of moodOptions){
+        const btn = document.createElement("button");
+        btn.className = "mood-btn" + (mood === vibeProfile.mood ? " active" : "");
+        btn.dataset.mood = mood;
+        btn.textContent = mood;
+        btn.addEventListener("click", () => setMood(mood));
+        moodButtons.appendChild(btn);
+      }
+    }
+
+    function renderChips(){
+      for(const label of quickPrompts){
+        const chip = document.createElement("button");
+        chip.className = "chip";
+        chip.textContent = label;
+        chip.addEventListener("click", () => {
+          input.value = label;
+          autoGrow(input);
+          input.focus();
+        });
+        chipsWrap.appendChild(chip);
+      }
+    }
+
+    function detectIntent(text){
+      const t = normalizeText(text);
+      const stripped = t.replace(/[^\w\s']/g, "").trim();
+      for(const intent of INTENTS){
+        for(const phrase of intent.match || []){
+          if(stripped === phrase || t.includes(phrase)) return intent;
+        }
+      }
+      return null;
+    }
+
+    function detectCategory(text){
+      const t = normalizeText(text);
+      const ws = wordSet(t);
+      let best = { name:"general", score:0 };
+      for(const route of routes){
+        let score = 0;
+        for(const phrase of route.phrases || []) if(t.includes(phrase)) score += 3;
+        for(const word of route.words || []) if(ws.has(word)) score += 1;
+        if(score > best.score) best = { name:route.name, score };
+      }
+      return best.score >= 1 ? best.name : "general";
+    }
+
+    function getAffirmation(userMood){
+      const matching = [];
+      for(const card of affirmationCards){
+        if(card.moods.includes(userMood)) matching.push(card.text);
+      }
+      return matching.length ? pick(matching) : "You’re doing okay, even if today feels a little messy.";
+    }
+
+    function hypeMode(userMood){
+      if(userMood !== "sad" && userMood !== "stressed" && userMood !== "tired") return "";
+      return "\n\nHype mode ✿ tiny reset idea: water, stretch, one easy win, then come back.";
+    }
+
+    function replyByCategory(category, userMood){
+      const safety = "If something feels serious or unsafe, talk to a trusted adult or professional. 💗";
+
+      if(category === "hair tips"){
+        return pick([
+          "Hair reset ✿ try shampoo on the scalp only, conditioner on the ends, and a leave-in while your hair is damp. For frizz, use less rubbing and more scrunching.",
+          "For frizzy hair: microfiber towel, lighter touch, leave-in conditioner, and lower heat. Tell me if your hair is straight, wavy, curly, or coily and I’ll narrow it down."
+        ]);
+      }
+
+      if(category === "makeup tips"){
+        return pick([
+          "Soft glam tip ✿ blush a little higher on the cheeks for lift, then only set the oily areas instead of powdering everything.",
+          "If your base gets cakey, use less product and blend with a damp sponge. Cream products usually keep the look softer."
+        ]);
+      }
+
+      if(category === "studying help"){
+        const studyPack = detectStudyTopic(input.value || "");
+        if(studyPack){
+          let response = `${studyPack.summary}\n\nFlashcards`;
+          for(const [front, back] of studyPack.flashcards){
+            response += `\n• ${front} — ${back}`;
+          }
+          response += "\n\nQuick quiz";
+          studyPack.quiz.forEach((item, index) => {
+            response += `\n${index + 1}. ${item.q}`;
+          });
+          return response;
+        }
+        return pick([
+          "Study mode ✿ tell me the subject and topic, and I’ll give you a mini summary plus a quick quiz.",
+          `Let’s make this lighter. Try 25 minutes of focus, 5 minutes of rest, then active recall. ${getAffirmation(userMood)}`
+        ]);
+      }
+
+      if(category === "boy tips"){
+        return pick([
+          `If they like you, it should not feel confusing all the time. Match effort, notice consistency, and protect your peace. ${safety}`,
+          "Give me the tea ✿ what happened, and what do you want from the situation?"
+        ]);
+      }
+
+      if(category === "confidence"){
+        return `${getAffirmation(userMood)}\n\nConfidence tip ✿ talk to yourself the way you would talk to someone you love. Not every thought deserves a microphone.`;
+      }
+
+      if(category === "wellness"){
+        return pick([
+          `Gentle wellness first ✿ sleep, water, movement, and food are still the basics. ${getAffirmation(userMood)}`,
+          "If your energy is low, build a softer day instead of forcing a perfect one. Rest can still be productive."
+        ]);
+      }
+
+      return null;
+    }
+
+    function detectStudyTopic(text){
+      const t = normalizeText(text);
+      for(const subject in studyTopics){
+        for(const topic in studyTopics[subject]){
+          if(t.includes(subject) || t.includes(topic) || t.includes(`quiz me on ${topic}`)){
+            return studyTopics[subject][topic];
+          }
+        }
+      }
+      return null;
+    }
+
+    function libsReady(){
+      return (typeof window.math !== "undefined") && (typeof window.nerdamer !== "undefined");
+    }
+
+    function cleanExpr(expr){
+      return expr.replace(/\s+/g, " ").trim();
+    }
+
+    function parseCalculusPrompt(text){
+      const t = text.trim();
+      let m = t.match(/^(?:integral\s+of|integrate)\s+(.+?)\s+d([a-zA-Z])\s*$/i);
+      if(m) return { kind:"integral", expr: cleanExpr(m[1]), variable:m[2] };
+      m = t.match(/^(?:derivative\s+of|differentiate)\s+(.+?)(?:\s+(?:wrt|with\s+respect\s+to)\s+([a-zA-Z]))?\s*$/i);
+      if(m) return { kind:"derivative", expr: cleanExpr(m[1]), variable:(m[2] || "x") };
+      m = t.match(/^simplify\s+(.+)\s*$/i);
+      if(m) return { kind:"simplify", expr: cleanExpr(m[1]) };
+      return null;
+    }
+
+    function parseNumericPrompt(text){
+      let t = text.trim();
+      t = t.replace(/^what('?s| is)\s+/i, "");
+      t = t.replace(/\?+$/g, "").trim();
+      const hasDigit = /\d/.test(t);
+      const hasMathWord = /\b(sin|cos|tan|sqrt|log|ln|pi|e)\b/i.test(t);
+      const hasOperator = /[+\-*/^()]/.test(t);
+      if(!(hasOperator && (hasDigit || hasMathWord))) return null;
+      const allowed = /^[0-9a-zA-Z+\-*/^().,\s_]+$/;
+      if(!allowed.test(t)) return null;
+      return cleanExpr(t);
+    }
+
+    function formatCalcResult(label, inputExpr, outputExpr){
+      const intro = pick(["Math served. ✿", "Calculator mode ✿", "Okay brainy bestie ✿"]);
+      return `${intro}\n\n${label}\n${inputExpr}\n\nResult\n${outputExpr}`;
+    }
+
+    function tryCalculator(userText){
+      if(!libsReady()){
+        return "My math libraries didn’t load yet 😭 Refresh once and try again.";
+      }
+      const calc = parseCalculusPrompt(userText);
+      if(calc){
+        try{
+          if(calc.kind === "integral"){
+            const res = window.nerdamer.integrate(calc.expr, calc.variable).toString();
+            return formatCalcResult(`Integral (d${calc.variable})`, `∫ ${calc.expr} d${calc.variable}`, `${res} + C`);
+          }
+          if(calc.kind === "derivative"){
+            const res = window.nerdamer.diff(calc.expr, calc.variable).toString();
+            return formatCalcResult(`Derivative (wrt ${calc.variable})`, `d/d${calc.variable} [ ${calc.expr} ]`, res);
+          }
+          if(calc.kind === "simplify"){
+            const res = window.nerdamer(calc.expr).simplify().toString();
+            return formatCalcResult("Simplify", calc.expr, res);
+          }
+        }catch{
+          return "That calculus prompt is a little dramatic. Try: integral of 2*x dx or derivative of sin(x).";
+        }
+      }
+      const expr = parseNumericPrompt(userText);
+      if(expr){
+        try{
+          const value = window.math.evaluate(expr);
+          return formatCalcResult("Expression", expr, String(value));
+        }catch{
+          return "That expression confused me a little 😭 Try: (2+2)*5 or sqrt(16).";
+        }
+      }
+      return null;
+    }
+
+    function replyGeneral(userMood){
+      return pick([
+        `I’m listening ✿ ${getAffirmation(userMood)}`,
+        "Tell me a little more and I’ll try to be useful and cute.",
+        "Okay bestie ✿ give me context, details, or the subject and I’ll help from there."
+      ]);
+    }
+
+    function generateReply(userText, userMood){
+      if(!userText.trim()) return "Say something and I’ll be right here ✿";
+
+      const calc = tryCalculator(userText);
+      if(calc) return calc;
+
+      const intent = detectIntent(userText);
+      if(intent) return pick(intent.replies) + hypeMode(userMood);
+
+      const category = detectCategory(userText);
+      const categoryReply = replyByCategory(category, userMood);
+      if(categoryReply) return categoryReply + hypeMode(userMood);
+
+      return replyGeneral(userMood) + hypeMode(userMood);
+    }
+
+    function send(){
+      const text = input.value.trim();
+      if(!text) return;
+      addBubble(text, "you");
+      input.value = "";
+      autoGrow(input);
+      addTyping();
+      setTimeout(() => {
+        removeTyping();
+        addBubble(generateReply(text, vibeProfile.mood), "bbg");
+      }, 380);
+    }
+
+    sendBtn.addEventListener("click", send);
+    input.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        send();
+      }
+    });
+
+    renderMoodButtons();
+    renderChips();
+    addBubble(
+      "hi bestie ✿ i’m ChatBBG.\nI’m rule-based, not powered by external AI, which makes me safer for an AP-style performance task.\n\nTry:\n• i'm stressed\n• quiz me on cells\n• how do i fix frizzy hair\n• integral of 2x dx",
+      "bbg"
+    );
+  </script>
+</body>
+</html>
