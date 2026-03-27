@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ChatBBG</title>
+
+<!-- fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- math + calculus -->
+<script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.2/lib/browser/math.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
+
+<style>
+/* soft editorial vibe */
+body{
+  margin:0;
+  font-family:"DM Sans", sans-serif;
+  background:#fdfafa;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.container{
+  width:90%;
+  max-width:700px;
+  height:80vh;
+  background:white;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.chat{
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.bubble{
+  padding:10px 14px;
+  border-radius:16px;
+  margin-bottom:10px;
+  max-width:80%;
+}
+
+.user{
+  background:#ffe3f1;
+  align-self:flex-end;
+}
+
+.bot{
+  background:#f5f5f5;
+}
+
+.input-area{
+  display:flex;
+  border-top:1px solid #eee;
+}
+
+textarea{
+  flex:1;
+  border:none;
+  padding:12px;
+  resize:none;
+  font-family:"DM Sans";
+}
+
+button{
+  border:none;
+  padding:12px;
+  background:#ff7abf;
+  color:white;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div id="chat" class="chat"></div>
+
+  <div class="input-area">
+    <textarea id="input" placeholder="type something..."></textarea>
+    <button onclick="send()">send</button>
+  </div>
+</div>
+
+<script>
+
+// ChatBBG ✿
+// this is my chatbot project
+// it uses lists + functions + parameters (no real AI)
+// it reacts to messages and can also do math
+
+// ---------------- LISTS ----------------
+
+// this stores different types of messages + replies
+const INTENTS = [
+  {
+    match: ["hi","hello","hey"],
+    replies: ["hi bestie ✿","heyyy ✿","hiii what’s up"]
+  },
+  {
+    match: ["bye","cya"],
+    replies: ["bye ✿","cyaaa","don’t forget me 💔"]
+  },
+  {
+    match: ["lol","haha"],
+    replies: ["STOP 💀","that’s funny 😭"]
+  }
+];
+
+// categories for advice
+const routes = [
+  {
+    name:"studying",
+    words:["study","exam","test","homework"]
+  },
+  {
+    name:"hair",
+    words:["hair","frizz","curl"]
+  }
+];
+
+// ---------------- FUNCTIONS ----------------
+
+// this checks if message matches an intent
+function detectIntent(text){
+  text = text.toLowerCase();
+
+  for(let intent of INTENTS){
+    for(let word of intent.match){
+      if(text.includes(word)){
+        return intent;
+      }
+    }
+  }
+  return null;
+}
+
+// this checks category using keywords
+function detectCategory(text){
+  text = text.toLowerCase();
+
+  for(let route of routes){
+    for(let word of route.words){
+      if(text.includes(word)){
+        return route.name;
+      }
+    }
+  }
+  return "general";
+}
+
+// this gives replies based on category
+function replyByCategory(category){
+  if(category === "studying"){
+    return "ok study mode ✿ try 25 min focus + 5 min break";
+  }
+
+  if(category === "hair"){
+    return "hair tip ✿ use leave-in conditioner + avoid heat";
+  }
+
+  return "tell me more 👀";
+}
+
+// math + calculus function
+function tryMath(text){
+  try{
+    if(text.includes("integral")){
+      return nerdamer.integrate("2*x","x").toString() + " + C";
+    }
+
+    let result = math.evaluate(text);
+    return result.toString();
+  }catch{
+    return null;
+  }
+}
+
+// MAIN FUNCTION
+function generateReply(userText){
+
+  // 1 math first
+  let mathResult = tryMath(userText);
+  if(mathResult) return mathResult;
+
+  // 2 intent
+  let intent = detectIntent(userText);
+  if(intent){
+    return intent.replies[Math.floor(Math.random()*intent.replies.length)];
+  }
+
+  // 3 category
+  let category = detectCategory(userText);
+  return replyByCategory(category);
+}
+
+// send function (runs when button clicked)
+function send(){
+  let input = document.getElementById("input");
+  let text = input.value.trim();
+
+  if(text === "") return;
+
+  addMessage(text,"user");
+
+  let reply = generateReply(text);
+
+  setTimeout(()=>{
+    addMessage(reply,"bot");
+  },400);
+
+  input.value = "";
+}
+
+// adds messages to screen
+function addMessage(text,type){
+  let chat = document.getElementById("chat");
+  let div = document.createElement("div");
+
+  div.className = "bubble " + type;
+  div.innerText = text;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// starter message
+addMessage("hi bestie ✿ ask me anything","bot");
+
+</script>
+
+</body>
+</html>
