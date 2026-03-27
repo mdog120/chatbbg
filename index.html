@@ -1,245 +1,689 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatBBG</title>
 
-<title>ChatBBG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@500;600&display=swap" rel="stylesheet">
 
-<!-- fonts -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+  <!-- math libraries -->
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.2/lib/browser/math.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
 
-<!-- math + calculus -->
-<script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.2/lib/browser/math.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
+  <style>
+    :root{
+      --bg1:#fffafc;
+      --bg2:#fff1f7;
+      --panel:#ffffffee;
+      --line:#f1d8e5;
+      --text:#2a1f28;
+      --muted:#7d6775;
+      --pink:#ff77b7;
+      --pink2:#ffb6d8;
+      --accent:#fff0f7;
+      --bot:#fff8fb;
+      --user:#ffe4f1;
+      --shadow:0 18px 45px rgba(83, 34, 63, 0.10);
+      --radius:24px;
+    }
 
-<style>
-/* soft editorial vibe */
-body{
-  margin:0;
-  font-family:"DM Sans", sans-serif;
-  background:#fdfafa;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
+    *{
+      box-sizing:border-box;
+    }
 
-.container{
-  width:90%;
-  max-width:700px;
-  height:80vh;
-  background:white;
-  border-radius:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"DM Sans", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, #ffe8f2 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #ffeef8 0%, transparent 32%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
 
-.chat{
-  flex:1;
-  padding:20px;
-  overflow-y:auto;
-}
+    .container{
+      width:min(920px, 100%);
+      height:min(88vh, 800px);
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:32px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
 
-.bubble{
-  padding:10px 14px;
-  border-radius:16px;
-  margin-bottom:10px;
-  max-width:80%;
-}
+    .topbar{
+      padding:22px 24px 16px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,250,252,0.92));
+    }
 
-.user{
-  background:#ffe3f1;
-  align-self:flex-end;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
 
-.bot{
-  background:#f5f5f5;
-}
+    .title-wrap h1{
+      margin:0;
+      font-family:"Fraunces", serif;
+      font-size:30px;
+      font-weight:600;
+      letter-spacing:0.3px;
+    }
 
-.input-area{
-  display:flex;
-  border-top:1px solid #eee;
-}
+    .title-wrap p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+      max-width:700px;
+    }
 
-textarea{
-  flex:1;
-  border:none;
-  padding:12px;
-  resize:none;
-  font-family:"DM Sans";
-}
+    .pill{
+      border:1px solid #f3cfe0;
+      background:#fff6fa;
+      color:#8e5c78;
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      white-space:nowrap;
+    }
 
-button{
-  border:none;
-  padding:12px;
-  background:#ff7abf;
-  color:white;
-  cursor:pointer;
-}
-</style>
+    .suggestions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    .chip{
+      border:none;
+      background:#fff;
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font:inherit;
+      font-size:13px;
+      transition:0.18s ease;
+    }
+
+    .chip:hover{
+      transform:translateY(-1px);
+      background:#fff6fa;
+      border-color:#efbfd6;
+    }
+
+    .chat{
+      flex:1;
+      overflow-y:auto;
+      padding:22px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      scroll-behavior:smooth;
+    }
+
+    .row{
+      display:flex;
+    }
+
+    .row.user-row{
+      justify-content:flex-end;
+    }
+
+    .bubble{
+      max-width:min(78%, 720px);
+      padding:14px 16px;
+      border-radius:20px;
+      line-height:1.55;
+      font-size:15px;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      border:1px solid var(--line);
+      box-shadow:0 8px 18px rgba(64, 27, 48, 0.04);
+    }
+
+    .bubble.bot{
+      background:var(--bot);
+      border-top-left-radius:8px;
+    }
+
+    .bubble.user{
+      background:var(--user);
+      border-color:#f0bfd7;
+      border-top-right-radius:8px;
+    }
+
+    .meta{
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .typing{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:4px 0;
+    }
+
+    .typing span{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--pink);
+      display:inline-block;
+      animation:bounce 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2){ animation-delay:0.15s; }
+    .typing span:nth-child(3){ animation-delay:0.3s; }
+
+    @keyframes bounce{
+      0%,100%{ transform:translateY(0); opacity:0.45; }
+      50%{ transform:translateY(-4px); opacity:1; }
+    }
+
+    .input-area{
+      border-top:1px solid var(--line);
+      padding:16px 18px 18px;
+      background:rgba(255,255,255,0.94);
+    }
+
+    .input-box{
+      display:flex;
+      gap:12px;
+      align-items:flex-end;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:24px;
+      padding:10px;
+      box-shadow:0 10px 24px rgba(83, 34, 63, 0.06);
+    }
+
+    textarea{
+      flex:1;
+      border:none;
+      outline:none;
+      resize:none;
+      min-height:24px;
+      max-height:130px;
+      font:inherit;
+      font-size:15px;
+      line-height:1.5;
+      padding:8px 10px;
+      background:transparent;
+      color:var(--text);
+    }
+
+    .send-btn{
+      border:none;
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--pink), #ff9fcc);
+      color:white;
+      cursor:pointer;
+      font-size:18px;
+      font-weight:700;
+      box-shadow:0 10px 20px rgba(255,119,183,0.28);
+      transition:0.18s ease;
+      flex-shrink:0;
+    }
+
+    .send-btn:hover{
+      transform:translateY(-1px) scale(1.02);
+    }
+
+    .footer-note{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      padding:0 6px;
+    }
+
+    @media (max-width:700px){
+      body{
+        padding:10px;
+      }
+
+      .container{
+        height:95vh;
+        border-radius:22px;
+      }
+
+      .topbar{
+        padding:18px 16px 14px;
+      }
+
+      .chat{
+        padding:16px;
+      }
+
+      .bubble{
+        max-width:88%;
+      }
+
+      .title-wrap h1{
+        font-size:25px;
+      }
+
+      .suggestions{
+        gap:8px;
+      }
+
+      .chip{
+        font-size:12px;
+        padding:9px 12px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="title-wrap">
+          <h1>ChatBBG ✿</h1>
+          <p>
+            your cute little rule-based chatbot bestie. ask for study help, advice, math, calculus, motivation,
+            outfit ideas, glow-up tips, or just random things like “lol” and “bye.”
+          </p>
+        </div>
+        <div class="pill">lists + functions + parameters</div>
+      </div>
 
-<div class="container">
-  <div id="chat" class="chat"></div>
+      <div class="suggestions">
+        <button class="chip" onclick="fillPrompt('hi')">hi</button>
+        <button class="chip" onclick="fillPrompt('i need study help for biology')">study help</button>
+        <button class="chip" onclick="fillPrompt('give me a motivational quote')">motivation</button>
+        <button class="chip" onclick="fillPrompt('what should i wear today')">outfit ideas</button>
+        <button class="chip" onclick="fillPrompt('hair tips for frizz')">hair tips</button>
+        <button class="chip" onclick="fillPrompt('blush tips')">makeup tips</button>
+        <button class="chip" onclick="fillPrompt('2+2*5')">math</button>
+        <button class="chip" onclick="fillPrompt('integral of 2*x dx')">calculus</button>
+        <button class="chip" onclick="fillPrompt('my crush is confusing me')">boy advice</button>
+        <button class="chip" onclick="fillPrompt('im feeling stressed')">mood support</button>
+      </div>
+    </div>
 
-  <div class="input-area">
-    <textarea id="input" placeholder="type something..."></textarea>
-    <button onclick="send()">send</button>
+    <div id="chat" class="chat"></div>
+
+    <div class="input-area">
+      <div class="input-box">
+        <textarea id="input" placeholder="message ChatBBG... try: lol / study tips / what should i wear / 2+2 / integral of x^2 dx"></textarea>
+        <button class="send-btn" onclick="send()">➜</button>
+      </div>
+      <div class="footer-note">
+        <span>enter = send • shift+enter = new line</span>
+        <span>no real AI used — just coded logic ✿</span>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
+  <script>
+    // ChatBBG ✿
+    // this is my chatbot project and it uses rule-based logic instead of real AI
+    // i used lists, functions, parameters, loops, and if statements
+    // the goal is to make it feel fun and supportive, not boring and robotic
 
-// ChatBBG ✿
-// this is my chatbot project
-// it uses lists + functions + parameters (no real AI)
-// it reacts to messages and can also do math
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
 
-// ---------------- LISTS ----------------
+    // this makes the text box grow if the user types more lines
+    function autoGrow() {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 130) + "px";
+    }
 
-// this stores different types of messages + replies
-const INTENTS = [
-  {
-    match: ["hi","hello","hey"],
-    replies: ["hi bestie ✿","heyyy ✿","hiii what’s up"]
-  },
-  {
-    match: ["bye","cya"],
-    replies: ["bye ✿","cyaaa","don’t forget me 💔"]
-  },
-  {
-    match: ["lol","haha"],
-    replies: ["STOP 💀","that’s funny 😭"]
-  }
-];
+    input.addEventListener("input", autoGrow);
 
-// categories for advice
-const routes = [
-  {
-    name:"studying",
-    words:["study","exam","test","homework"]
-  },
-  {
-    name:"hair",
-    words:["hair","frizz","curl"]
-  }
-];
+    input.addEventListener("keydown", function(e){
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        send();
+      }
+    });
 
-// ---------------- FUNCTIONS ----------------
+    function fillPrompt(text){
+      input.value = text;
+      autoGrow();
+      input.focus();
+    }
 
-// this checks if message matches an intent
-function detectIntent(text){
-  text = text.toLowerCase();
+    // this list stores different kinds of messages the user might send
+    // each category has possible matching words and possible replies
+    const INTENTS = [
+      {
+        name: "greeting",
+        match: ["hi","hello","hey","hii","hiii","yo","sup"],
+        replies: [
+          "hi bestie ✿ what’s the vibe today?",
+          "heyyy ✿ what do you need help with?",
+          "hiii angel ✿ i’m here."
+        ]
+      },
+      {
+        name: "bye",
+        match: ["bye","goodbye","cya","ttyl","see ya","later","gn","goodnight"],
+        replies: [
+          "bye bestie ✿ go be iconic.",
+          "ttyl ✿ don’t forget how cute and smart you are.",
+          "goodnight ✿ rest and recharge."
+        ]
+      },
+      {
+        name: "laugh",
+        match: ["lol","lmao","haha","hehe","😭","💀"],
+        replies: [
+          "STOPPP 💀",
+          "ur so real for that 😭",
+          "okay wait that was actually funny."
+        ]
+      },
+      {
+        name: "thanks",
+        match: ["thanks","thank you","ty","thx"],
+        replies: [
+          "ofc ✿",
+          "always bestie ✿",
+          "you’re welcomee."
+        ]
+      },
+      {
+        name: "whoareyou",
+        match: ["who are you","what can you do","help","commands"],
+        replies: [
+          "i can help with studying, mood support, hair, makeup, outfits, boy advice, math, and calculus ✿",
+          "try asking me stuff like:\n• study tips\n• hair tips\n• outfit ideas\n• motivational quote\n• 2+2\n• integral of x^2 dx"
+        ]
+      }
+    ];
 
-  for(let intent of INTENTS){
-    for(let word of intent.match){
-      if(text.includes(word)){
-        return intent;
+    // this list stores topic categories so the chatbot can figure out what kind of help the user wants
+    const routes = [
+      {
+        name: "studying",
+        words: ["study","studying","exam","test","quiz","homework","school","assignment","notes","focus","revision"],
+        replies: [
+          "study mode ✿ try this:\n1. 25 minutes focused\n2. 5 minute break\n3. quiz yourself after\n4. repeat",
+          "okay smartie ✿ tell me the subject and i’ll help you break it down.",
+          "best study tip? active recall. don’t just reread — actually test yourself."
+        ]
+      },
+      {
+        name: "hair",
+        words: ["hair","frizz","curly","curl","straight","shampoo","conditioner","scalp","split ends"],
+        replies: [
+          "hair tip ✿ use leave-in conditioner and try not to overdo heat.",
+          "for frizz: microfiber towel, less brushing, and a light hair oil on the ends.",
+          "tell me your hair type and i’ll give better tips ✿"
+        ]
+      },
+      {
+        name: "makeup",
+        words: ["makeup","blush","concealer","foundation","mascara","brows","eyeliner","lip gloss","lipstick"],
+        replies: [
+          "makeup tip ✿ blush placement changes everything honestly.",
+          "for a softer look: lighter base, cream blush, and gloss.",
+          "if your makeup looks cakey, use less product and blend with a damp sponge."
+        ]
+      },
+      {
+        name: "fashion",
+        words: ["outfit","wear","clothes","fashion","style","jeans","dress","cute outfit","aesthetic"],
+        replies: [
+          "outfit idea ✿ fitted top + loose jeans + cute jewelry = always works.",
+          "if you don’t know what to wear, start with one main piece and build around it.",
+          "tell me where you’re going and i’ll suggest an outfit vibe ✿"
+        ]
+      },
+      {
+        name: "motivation",
+        words: ["motivation","motivational","quote","confidence","affirmation","sad","stressed","anxious","low","upset"],
+        replies: [
+          "affirmation time ✿ you do not need to be perfect to be worthy.",
+          "deep breath bestie ✿ one bad moment does not ruin your whole day.",
+          "you’ve survived 100% of your hardest days so far. that’s kind of iconic."
+        ]
+      },
+      {
+        name: "boy advice",
+        words: ["boy","crush","dating","relationship","situationship","ghosted","text him","he likes me","red flag"],
+        replies: [
+          "boy advice ✿ if he likes you, it should not be confusing 24/7.",
+          "match energy. don’t overchase someone giving half effort.",
+          "red flag check ✿ inconsistency, mixed signals, and only texting when bored."
+        ]
+      },
+      {
+        name: "food",
+        words: ["food","snack","hungry","breakfast","lunch","dinner","what should i eat"],
+        replies: [
+          "snack idea ✿ fruit + yogurt, toast + eggs, or literally just something with protein.",
+          "if you’re hungry, eat something real and not just random crumbs bestie 😭",
+          "quick meal idea: rice, chicken, veggies. easy and cute."
+        ]
+      },
+      {
+        name: "self care",
+        words: ["self care","glow up","routine","skin","skincare","face wash","acne","oily skin","dry skin"],
+        replies: [
+          "glow-up tip ✿ consistency matters more than doing the most.",
+          "basic skincare is enough: cleanser, moisturizer, sunscreen.",
+          "for a reset day: shower, clean room, fresh clothes, water, and music."
+        ]
+      }
+    ];
+
+    // this is just a list of general replies if nothing matches
+    const fallbackReplies = [
+      "wait say more ✿ i need context.",
+      "okayyy tell me a little more so i can help better.",
+      "hmm i’m not fully getting it yet — try asking in a different way.",
+      "i can help with study tips, mood support, outfits, beauty, math, and more ✿"
+    ];
+
+    // this picks a random reply from a list
+    function pickRandom(list){
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    // this checks if the user typed a short message that matches one of the intent categories
+    function detectIntent(text){
+      const lower = text.toLowerCase().trim();
+
+      for(let intent of INTENTS){
+        for(let phrase of intent.match){
+          if(lower === phrase || lower.includes(phrase)){
+            return intent;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    // this checks topic categories using keywords
+    function detectCategory(text){
+      const lower = text.toLowerCase();
+
+      for(let route of routes){
+        for(let word of route.words){
+          if(lower.includes(word)){
+            return route;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    // this function checks if the user typed a math or calculus question
+    function tryMath(userText){
+      const lower = userText.toLowerCase().trim();
+
+      try{
+        // integral of ___ dx
+        let integralMatch = lower.match(/^integral of (.+) d([a-z])$/i);
+        if(integralMatch){
+          const expression = integralMatch[1];
+          const variable = integralMatch[2];
+          const result = nerdamer.integrate(expression, variable).toString();
+          return "integral result ✿\n∫ " + expression + " d" + variable + " = " + result + " + C";
+        }
+
+        // derivative of ___
+        let derivativeMatch = lower.match(/^derivative of (.+)$/i);
+        if(derivativeMatch){
+          const expression = derivativeMatch[1];
+          const result = nerdamer.diff(expression, "x").toString();
+          return "derivative result ✿\nd/dx(" + expression + ") = " + result;
+        }
+
+        // normal math
+        const hasNumber = /\d/.test(userText);
+        const hasOperator = /[\+\-\*\/\^\(\)]/.test(userText);
+
+        if(hasNumber && hasOperator){
+          const answer = math.evaluate(userText);
+          return "math result ✿\n" + userText + " = " + answer;
+        }
+      } catch(error){
+        return "hmm the math on that is being dramatic 😭 try something like:\n• 2+2*5\n• derivative of x^2\n• integral of 2*x dx";
+      }
+
+      return null;
+    }
+
+    // this is the main function of my whole chatbot
+    // it takes the user's message as a parameter and decides what kind of reply to give
+    function generateReply(userText){
+      // check math first
+      let mathReply = tryMath(userText);
+      if(mathReply){
+        return mathReply;
+      }
+
+      // then check short intents like hi / bye / lol
+      let foundIntent = detectIntent(userText);
+      if(foundIntent){
+        return pickRandom(foundIntent.replies);
+      }
+
+      // then check bigger topic categories
+      let foundCategory = detectCategory(userText);
+      if(foundCategory){
+        return pickRandom(foundCategory.replies);
+      }
+
+      // if nothing matches, use a general fallback
+      return pickRandom(fallbackReplies);
+    }
+
+    function addMessage(text, type){
+      const row = document.createElement("div");
+      row.className = type === "user" ? "row user-row" : "row";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble " + type;
+      bubble.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = type === "user" ? "You • just now" : "ChatBBG • just now";
+
+      bubble.appendChild(meta);
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function showTyping(){
+      const row = document.createElement("div");
+      row.className = "row";
+      row.id = "typingRow";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble bot";
+      bubble.innerHTML = `
+        <div class="typing">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="meta">ChatBBG • typing...</div>
+      `;
+
+      row.appendChild(bubble);
+      chat.appendChild(row);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function removeTyping(){
+      const typingRow = document.getElementById("typingRow");
+      if(typingRow){
+        typingRow.remove();
       }
     }
-  }
-  return null;
-}
 
-// this checks category using keywords
-function detectCategory(text){
-  text = text.toLowerCase();
+    // this runs when the user sends a message
+    function send(){
+      const text = input.value.trim();
 
-  for(let route of routes){
-    for(let word of route.words){
-      if(text.includes(word)){
-        return route.name;
+      if(text === ""){
+        return;
       }
-    }
-  }
-  return "general";
-}
 
-// this gives replies based on category
-function replyByCategory(category){
-  if(category === "studying"){
-    return "ok study mode ✿ try 25 min focus + 5 min break";
-  }
+      addMessage(text, "user");
+      input.value = "";
+      autoGrow();
 
-  if(category === "hair"){
-    return "hair tip ✿ use leave-in conditioner + avoid heat";
-  }
+      showTyping();
 
-  return "tell me more 👀";
-}
-
-// math + calculus function
-function tryMath(text){
-  try{
-    if(text.includes("integral")){
-      return nerdamer.integrate("2*x","x").toString() + " + C";
+      setTimeout(function(){
+        removeTyping();
+        const reply = generateReply(text);
+        addMessage(reply, "bot");
+      }, 500);
     }
 
-    let result = math.evaluate(text);
-    return result.toString();
-  }catch{
-    return null;
-  }
-}
+    // starter message so the user knows what they can ask
+    addMessage(
+`hi bestie ✿ i’m ChatBBG.
 
-// MAIN FUNCTION
-function generateReply(userText){
+you can ask me stuff like:
+• "give me study tips"
+• "i'm stressed"
+• "what should i wear today?"
+• "hair tips for frizz"
+• "blush tips"
+• "my crush is confusing me"
+• "2+2*5"
+• "derivative of x^2"
+• "integral of 2*x dx"
 
-  // 1 math first
-  let mathResult = tryMath(userText);
-  if(mathResult) return mathResult;
-
-  // 2 intent
-  let intent = detectIntent(userText);
-  if(intent){
-    return intent.replies[Math.floor(Math.random()*intent.replies.length)];
-  }
-
-  // 3 category
-  let category = detectCategory(userText);
-  return replyByCategory(category);
-}
-
-// send function (runs when button clicked)
-function send(){
-  let input = document.getElementById("input");
-  let text = input.value.trim();
-
-  if(text === "") return;
-
-  addMessage(text,"user");
-
-  let reply = generateReply(text);
-
-  setTimeout(()=>{
-    addMessage(reply,"bot");
-  },400);
-
-  input.value = "";
-}
-
-// adds messages to screen
-function addMessage(text,type){
-  let chat = document.getElementById("chat");
-  let div = document.createElement("div");
-
-  div.className = "bubble " + type;
-  div.innerText = text;
-
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-// starter message
-addMessage("hi bestie ✿ ask me anything","bot");
-
-</script>
-
+try one of the buttons above too ✿`,
+    "bot");
+  </script>
 </body>
 </html>
