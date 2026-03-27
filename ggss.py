@@ -6,7 +6,7 @@
   <title>ChatBBG</title>
 
   <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconAnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
 
@@ -711,7 +711,8 @@
     addBubble(
       "hi bestie ✿ i’m ChatBBG.\nI can help with anything, but I do have limitations due to being created by a 15 year old.\n\nTry:\n• lol / bruh / idk / nah\n• baby boo\n• bye / ttyl / cya\n• integral of 2x dx\n• blush",
       "bbg"
-    );
+    ); 
   </script>
 </body>
-</html>
+</html> 
+ 
