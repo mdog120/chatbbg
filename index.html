@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@500;600&display=swap" rel="stylesheet">
 
-  <!-- math libraries -->
   <script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.2/lib/browser/math.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.min.js"></script>
@@ -24,11 +23,9 @@
       --muted:#7d6775;
       --pink:#ff77b7;
       --pink2:#ffb6d8;
-      --accent:#fff0f7;
       --bot:#fff8fb;
       --user:#ffe4f1;
       --shadow:0 18px 45px rgba(83, 34, 63, 0.10);
-      --radius:24px;
     }
 
     *{
@@ -47,15 +44,15 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:22px;
+      padding:20px;
     }
 
     .container{
-      width:min(920px, 100%);
-      height:min(88vh, 800px);
+      width:min(960px, 100%);
+      height:92vh;
       background:var(--panel);
       border:1px solid var(--line);
-      border-radius:32px;
+      border-radius:30px;
       box-shadow:var(--shadow);
       backdrop-filter:blur(10px);
       overflow:hidden;
@@ -66,12 +63,12 @@
     .topbar{
       padding:22px 24px 16px;
       border-bottom:1px solid var(--line);
-      background:linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,250,252,0.92));
+      background:linear-gradient(to bottom, rgba(255,255,255,0.96), rgba(255,250,252,0.92));
     }
 
     .brand{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:16px;
       flex-wrap:wrap;
@@ -89,8 +86,8 @@
       margin:6px 0 0;
       color:var(--muted);
       font-size:14px;
-      line-height:1.5;
-      max-width:700px;
+      line-height:1.55;
+      max-width:720px;
     }
 
     .pill{
@@ -132,8 +129,9 @@
 
     .chat{
       flex:1;
+      min-height:0;
       overflow-y:auto;
-      padding:22px;
+      padding:24px;
       display:flex;
       flex-direction:column;
       gap:14px;
@@ -149,10 +147,10 @@
     }
 
     .bubble{
-      max-width:min(78%, 720px);
-      padding:14px 16px;
-      border-radius:20px;
-      line-height:1.55;
+      max-width:min(80%, 720px);
+      padding:15px 17px;
+      border-radius:22px;
+      line-height:1.6;
       font-size:15px;
       white-space:pre-wrap;
       word-wrap:break-word;
@@ -203,8 +201,8 @@
 
     .input-area{
       border-top:1px solid var(--line);
-      padding:16px 18px 18px;
-      background:rgba(255,255,255,0.94);
+      padding:18px 20px 20px;
+      background:rgba(255,255,255,0.96);
     }
 
     .input-box{
@@ -213,7 +211,7 @@
       align-items:flex-end;
       border:1px solid var(--line);
       background:#fff;
-      border-radius:24px;
+      border-radius:26px;
       padding:10px;
       box-shadow:0 10px 24px rgba(83, 34, 63, 0.06);
     }
@@ -223,20 +221,20 @@
       border:none;
       outline:none;
       resize:none;
-      min-height:24px;
-      max-height:130px;
+      min-height:54px;
+      max-height:170px;
       font:inherit;
       font-size:15px;
       line-height:1.5;
-      padding:8px 10px;
+      padding:12px 12px;
       background:transparent;
       color:var(--text);
     }
 
     .send-btn{
       border:none;
-      width:50px;
-      height:50px;
+      width:54px;
+      height:54px;
       border-radius:50%;
       background:linear-gradient(135deg, var(--pink), #ff9fcc);
       color:white;
@@ -269,7 +267,7 @@
       }
 
       .container{
-        height:95vh;
+        height:96vh;
         border-radius:22px;
       }
 
@@ -282,20 +280,20 @@
       }
 
       .bubble{
-        max-width:88%;
+        max-width:90%;
       }
 
       .title-wrap h1{
         font-size:25px;
       }
 
-      .suggestions{
-        gap:8px;
-      }
-
       .chip{
         font-size:12px;
         padding:9px 12px;
+      }
+
+      textarea{
+        min-height:50px;
       }
     }
   </style>
@@ -307,8 +305,8 @@
         <div class="title-wrap">
           <h1>ChatBBG ✿</h1>
           <p>
-            your cute little rule-based chatbot bestie. ask for study help, advice, math, calculus, motivation,
-            outfit ideas, glow-up tips, or just random things like “lol” and “bye.”
+            your rule-based chatbot bestie. ask for study tips, flashcards, motivation, beauty advice,
+            outfit ideas, math, calculus, or just random stuff like “lol” and “bye.”
           </p>
         </div>
         <div class="pill">lists + functions + parameters</div>
@@ -316,15 +314,15 @@
 
       <div class="suggestions">
         <button class="chip" onclick="fillPrompt('hi')">hi</button>
-        <button class="chip" onclick="fillPrompt('i need study help for biology')">study help</button>
+        <button class="chip" onclick="fillPrompt('give me study tips')">study tips</button>
+        <button class="chip" onclick="fillPrompt('flashcards for biology cells')">flashcards</button>
         <button class="chip" onclick="fillPrompt('give me a motivational quote')">motivation</button>
         <button class="chip" onclick="fillPrompt('what should i wear today')">outfit ideas</button>
         <button class="chip" onclick="fillPrompt('hair tips for frizz')">hair tips</button>
         <button class="chip" onclick="fillPrompt('blush tips')">makeup tips</button>
         <button class="chip" onclick="fillPrompt('2+2*5')">math</button>
-        <button class="chip" onclick="fillPrompt('integral of 2*x dx')">calculus</button>
-        <button class="chip" onclick="fillPrompt('my crush is confusing me')">boy advice</button>
-        <button class="chip" onclick="fillPrompt('im feeling stressed')">mood support</button>
+        <button class="chip" onclick="fillPrompt('derivative of x^2')">derivative</button>
+        <button class="chip" onclick="fillPrompt('integral of 2*x dx')">integral</button>
       </div>
     </div>
 
@@ -332,29 +330,30 @@
 
     <div class="input-area">
       <div class="input-box">
-        <textarea id="input" placeholder="message ChatBBG... try: lol / study tips / what should i wear / 2+2 / integral of x^2 dx"></textarea>
+        <textarea id="input" placeholder="message ChatBBG... try: flashcards for photosynthesis / study tips / 2+2 / integral of x^2 dx"></textarea>
         <button class="send-btn" onclick="send()">➜</button>
       </div>
       <div class="footer-note">
         <span>enter = send • shift+enter = new line</span>
-        <span>no real AI used — just coded logic ✿</span>
+        <span>no external AI — just coded logic ✿</span>
       </div>
     </div>
   </div>
 
   <script>
     // ChatBBG ✿
-    // this is my chatbot project and it uses rule-based logic instead of real AI
+    // this is my chatbot project
+    // it uses rule-based logic instead of real AI
     // i used lists, functions, parameters, loops, and if statements
-    // the goal is to make it feel fun and supportive, not boring and robotic
+    // i also added flashcards using pre-made data
 
     const chat = document.getElementById("chat");
     const input = document.getElementById("input");
 
-    // this makes the text box grow if the user types more lines
+    // this makes the text area grow when the user types more
     function autoGrow() {
       input.style.height = "auto";
-      input.style.height = Math.min(input.scrollHeight, 130) + "px";
+      input.style.height = Math.min(input.scrollHeight, 170) + "px";
     }
 
     input.addEventListener("input", autoGrow);
@@ -372,8 +371,7 @@
       input.focus();
     }
 
-    // this list stores different kinds of messages the user might send
-    // each category has possible matching words and possible replies
+    // this list stores different short message types and replies
     const INTENTS = [
       {
         name: "greeting",
@@ -412,23 +410,23 @@
         ]
       },
       {
-        name: "whoareyou",
-        match: ["who are you","what can you do","help","commands"],
+        name: "help",
+        match: ["help","what can you do","commands","who are you"],
         replies: [
-          "i can help with studying, mood support, hair, makeup, outfits, boy advice, math, and calculus ✿",
-          "try asking me stuff like:\n• study tips\n• hair tips\n• outfit ideas\n• motivational quote\n• 2+2\n• integral of x^2 dx"
+          "i can help with study tips, flashcards, motivation, beauty, outfits, math, and calculus ✿",
+          "try asking:\n• flashcards for biology cells\n• study tips\n• hair tips for frizz\n• what should i wear today?\n• 2+2\n• derivative of x^2"
         ]
       }
     ];
 
-    // this list stores topic categories so the chatbot can figure out what kind of help the user wants
+    // this list stores bigger categories with keywords and replies
     const routes = [
       {
         name: "studying",
         words: ["study","studying","exam","test","quiz","homework","school","assignment","notes","focus","revision"],
         replies: [
           "study mode ✿ try this:\n1. 25 minutes focused\n2. 5 minute break\n3. quiz yourself after\n4. repeat",
-          "okay smartie ✿ tell me the subject and i’ll help you break it down.",
+          "i’m more of a study helper than a full teacher 😭\n\nbut i can help with study methods, flashcards, and practice ideas.",
           "best study tip? active recall. don’t just reread — actually test yourself."
         ]
       },
@@ -478,15 +476,6 @@
         ]
       },
       {
-        name: "food",
-        words: ["food","snack","hungry","breakfast","lunch","dinner","what should i eat"],
-        replies: [
-          "snack idea ✿ fruit + yogurt, toast + eggs, or literally just something with protein.",
-          "if you’re hungry, eat something real and not just random crumbs bestie 😭",
-          "quick meal idea: rice, chicken, veggies. easy and cute."
-        ]
-      },
-      {
         name: "self care",
         words: ["self care","glow up","routine","skin","skincare","face wash","acne","oily skin","dry skin"],
         replies: [
@@ -497,20 +486,68 @@
       }
     ];
 
-    // this is just a list of general replies if nothing matches
+    // this list stores fallback replies
     const fallbackReplies = [
       "wait say more ✿ i need context.",
       "okayyy tell me a little more so i can help better.",
       "hmm i’m not fully getting it yet — try asking in a different way.",
-      "i can help with study tips, mood support, outfits, beauty, math, and more ✿"
+      "i can help with study tips, flashcards, mood support, outfits, beauty, math, and more ✿"
     ];
 
-    // this picks a random reply from a list
+    // this list stores pre-made flashcards by topic
+    const flashcardTopics = [
+      {
+        topic: "biology cells",
+        keywords: ["biology cells","cells","cell"],
+        cards: [
+          { front: "What is the cell membrane?", back: "It controls what enters and leaves the cell." },
+          { front: "What does the nucleus do?", back: "It stores DNA and controls cell activities." },
+          { front: "What do mitochondria do?", back: "They release energy from food." }
+        ]
+      },
+      {
+        topic: "photosynthesis",
+        keywords: ["photosynthesis"],
+        cards: [
+          { front: "What is photosynthesis?", back: "It is the process plants use to make food using sunlight." },
+          { front: "What gas do plants take in for photosynthesis?", back: "Carbon dioxide." },
+          { front: "What gas do plants release?", back: "Oxygen." }
+        ]
+      },
+      {
+        topic: "quadratic equations",
+        keywords: ["quadratic equations","quadratics","quadratic"],
+        cards: [
+          { front: "What is the standard form of a quadratic?", back: "ax² + bx + c = 0" },
+          { front: "What is the quadratic formula?", back: "x = (-b ± √(b² - 4ac)) / 2a" },
+          { front: "What does the discriminant tell you?", back: "It tells you how many real solutions the quadratic has." }
+        ]
+      },
+      {
+        topic: "french revolution",
+        keywords: ["french revolution"],
+        cards: [
+          { front: "When did the French Revolution begin?", back: "1789" },
+          { front: "What was one major cause of the French Revolution?", back: "Unfair social classes and financial problems." },
+          { front: "What prison was stormed in 1789?", back: "The Bastille." }
+        ]
+      },
+      {
+        topic: "python basics",
+        keywords: ["python basics","python"],
+        cards: [
+          { front: "What symbol is used for comments in Python?", back: "#" },
+          { front: "What does print() do?", back: "It displays output on the screen." },
+          { front: "What is a variable?", back: "A named place to store data." }
+        ]
+      }
+    ];
+
     function pickRandom(list){
       return list[Math.floor(Math.random() * list.length)];
     }
 
-    // this checks if the user typed a short message that matches one of the intent categories
+    // this checks short intent messages like hi or bye
     function detectIntent(text){
       const lower = text.toLowerCase().trim();
 
@@ -525,7 +562,7 @@
       return null;
     }
 
-    // this checks topic categories using keywords
+    // this checks bigger advice/support categories
     function detectCategory(text){
       const lower = text.toLowerCase();
 
@@ -540,12 +577,61 @@
       return null;
     }
 
-    // this function checks if the user typed a math or calculus question
+    // this finds a flashcard topic based on what the user typed
+    function findFlashcardTopic(userText){
+      const lower = userText.toLowerCase();
+
+      for(let topic of flashcardTopics){
+        for(let keyword of topic.keywords){
+          if(lower.includes(keyword)){
+            return topic;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    // this formats the flashcards into a readable chatbot reply
+    function makeFlashcardReply(topicObject){
+      let reply = "flashcards for " + topicObject.topic + " ✿\n\n";
+
+      for(let i = 0; i < topicObject.cards.length; i++){
+        reply += "card " + (i + 1) + "\n";
+        reply += "front: " + topicObject.cards[i].front + "\n";
+        reply += "back: " + topicObject.cards[i].back + "\n\n";
+      }
+
+      reply += "you can also ask for another topic like:\n";
+      reply += "• flashcards for photosynthesis\n";
+      reply += "• flashcards for quadratic equations\n";
+      reply += "• flashcards for french revolution";
+
+      return reply;
+    }
+
+    // this checks whether the user asked for flashcards
+    function tryFlashcards(userText){
+      const lower = userText.toLowerCase();
+
+      if(lower.includes("flashcards")){
+        const foundTopic = findFlashcardTopic(userText);
+
+        if(foundTopic){
+          return makeFlashcardReply(foundTopic);
+        } else {
+          return "i can do flashcards for these topics right now ✿\n\n• biology cells\n• photosynthesis\n• quadratic equations\n• french revolution\n• python basics\n\ntry typing something like: flashcards for photosynthesis";
+        }
+      }
+
+      return null;
+    }
+
+    // this checks if the user typed a math or calculus question
     function tryMath(userText){
       const lower = userText.toLowerCase().trim();
 
       try{
-        // integral of ___ dx
         let integralMatch = lower.match(/^integral of (.+) d([a-z])$/i);
         if(integralMatch){
           const expression = integralMatch[1];
@@ -554,7 +640,6 @@
           return "integral result ✿\n∫ " + expression + " d" + variable + " = " + result + " + C";
         }
 
-        // derivative of ___
         let derivativeMatch = lower.match(/^derivative of (.+)$/i);
         if(derivativeMatch){
           const expression = derivativeMatch[1];
@@ -562,7 +647,6 @@
           return "derivative result ✿\nd/dx(" + expression + ") = " + result;
         }
 
-        // normal math
         const hasNumber = /\d/.test(userText);
         const hasOperator = /[\+\-\*\/\^\(\)]/.test(userText);
 
@@ -577,28 +661,29 @@
       return null;
     }
 
-    // this is the main function of my whole chatbot
-    // it takes the user's message as a parameter and decides what kind of reply to give
+    // this is the main function
+    // it takes the user message as a parameter and decides what reply to return
     function generateReply(userText){
-      // check math first
+      let flashcardReply = tryFlashcards(userText);
+      if(flashcardReply){
+        return flashcardReply;
+      }
+
       let mathReply = tryMath(userText);
       if(mathReply){
         return mathReply;
       }
 
-      // then check short intents like hi / bye / lol
       let foundIntent = detectIntent(userText);
       if(foundIntent){
         return pickRandom(foundIntent.replies);
       }
 
-      // then check bigger topic categories
       let foundCategory = detectCategory(userText);
       if(foundCategory){
         return pickRandom(foundCategory.replies);
       }
 
-      // if nothing matches, use a general fallback
       return pickRandom(fallbackReplies);
     }
 
@@ -646,7 +731,6 @@
       }
     }
 
-    // this runs when the user sends a message
     function send(){
       const text = input.value.trim();
 
@@ -664,25 +748,25 @@
         removeTyping();
         const reply = generateReply(text);
         addMessage(reply, "bot");
-      }, 500);
+      }, 450);
     }
 
-    // starter message so the user knows what they can ask
     addMessage(
 `hi bestie ✿ i’m ChatBBG.
 
 you can ask me stuff like:
 • "give me study tips"
-• "i'm stressed"
+• "flashcards for biology cells"
+• "flashcards for photosynthesis"
 • "what should i wear today?"
 • "hair tips for frizz"
 • "blush tips"
-• "my crush is confusing me"
+• "i'm stressed"
 • "2+2*5"
 • "derivative of x^2"
 • "integral of 2*x dx"
 
-try one of the buttons above too ✿`,
+i’m rule-based, not real AI, so my flashcards work best with the topics i already know ✿`,
     "bot");
   </script>
 </body>
